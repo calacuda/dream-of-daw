@@ -1,4 +1,4 @@
-from .controls import buttons
+from .controls import LB
 
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
@@ -11,7 +11,7 @@ LINE_WIDTH = 4
 POINT_DIAMETER = SCREEN_HEIGHT / 75
 
 
-SELECT_MOD = buttons.get("lb")
+SELECT_MOD = LB
 
 
 GREEN = (166, 227, 161)
@@ -34,6 +34,10 @@ TEXT_COLOR_2 = SURFACE_2
 POINT_COLOR = ROSEWATER
 ACCENT_COLOR = PEACH
 LIMIT_COLOR = RED
+
+SIDE_BARS_W = SCREEN_WIDTH * 0.125
+MAIN_VIEW_W = SCREEN_WIDTH * 0.75
+BUTTON_H = SCREEN_CENTER[0] * 0.75 / 2
 
 
 def select_mod_pressed(controller):

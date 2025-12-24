@@ -2,23 +2,39 @@ from dataclasses import dataclass
 from copy import deepcopy
 
 
-buttons = {
-    "a": 1,
-    "b": 0,
-    "x": 3,
-    "y": 2,
-    "start": 7,
-    "select": 6,
-    "lb": 4,
-    "rb": 5,
-    "lt": 9,
-    "rt": 10,
-    "home": 8,
-    "up": (0, 1),
-    "down": (0, -1),
-    "left": (-1, 0),
-    "right": (1, 0)
-}
+# buttons = {
+#     "a": 1,
+#     "b": 0,
+#     "x": 3,
+#     "y": 2,
+#     "start": 7,
+#     "select": 6,
+#     "lb": 4,
+#     "rb": 5,
+#     "lt": 9,
+#     "rt": 10,
+#     "home": 8,
+#     "up": (0, 1),
+#     "down": (0, -1),
+#     "left": (-1, 0),
+#     "right": (1, 0)
+# }
+
+A = 1,
+B = 0,
+X = 3,
+Y = 2,
+START = 7,
+SELECT = 6,
+LB = 4,
+RB = 5,
+LT = 9,
+RT = 10,
+HOME = 8,
+UP = (0, 1),
+DOWN = (0, -1),
+LEFT = (-1, 0),
+RIGHT = (1, 0)
 
 
 @dataclass
