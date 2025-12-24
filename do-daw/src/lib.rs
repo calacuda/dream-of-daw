@@ -67,6 +67,10 @@ impl Mixer {
                 return;
             };
 
+            if channel.effects.len() >= N_EFFECTS {
+                return;
+            }
+
             if let Some(plugin) = load_plugin(effect) {
                 if location < channel.effects.len() {
                     channel.effects.insert(location, plugin);
@@ -74,7 +78,7 @@ impl Mixer {
                     channel.effects.push(plugin);
                 }
             }
-        } else {
+        } else if self.effects.len() < N_EFFECTS {
             if let Some(plugin) = load_plugin(effect) {
                 if location < self.effects.len() {
                     self.effects.insert(location, plugin);
