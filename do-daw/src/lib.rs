@@ -7,7 +7,6 @@ use rack::vst3::Vst3Plugin;
 const N_CHANNELS: usize = 4;
 const N_EFFECTS: usize = 3;
 
-// pub type SinglePlugin = Arc<RwLock<Vst3Plugin>>;
 pub type SinglePlugin = Vst3Plugin;
 
 #[pyclass]
@@ -123,5 +122,6 @@ fn do_daw(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Mixer>()?;
 
     m.add_function(wrap_pyfunction!(run, m)?)?;
+
     Ok(())
 }
