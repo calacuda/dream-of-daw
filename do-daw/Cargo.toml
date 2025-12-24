@@ -12,6 +12,6 @@ crate-type = ["cdylib"]
 crossbeam = { version = "0.8.4", features = ["crossbeam-channel"] }
 env_logger = "0.11.8"
 log = "0.4.29"
-# pyo3 = "0.27.0"
+pyo3 = "0.27.0"
 rack = { git = "https://github.com/calacuda/rack", version = "0.4.8", features = ["vst3"] }
 tinyaudio = { version = "2.0.0", features = ["alsa", "pulse"] }

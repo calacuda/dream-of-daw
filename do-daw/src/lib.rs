@@ -1,22 +1,20 @@
-// use pyo3::prelude::*;
+use pyo3::prelude::*;
 use rack::prelude::*;
 use rack::vst3::Vst3Plugin;
 use std::sync::{Arc, Mutex, RwLock};
-
-pub mod do_daw_test;
 
 const N_CHANNELS: usize = 4;
 
 // pub type SinglePlugin = Arc<RwLock<Vst3Plugin>>;
 pub type SinglePlugin = Vst3Plugin;
 
-// #[pyclass]
+#[pyclass]
 pub struct PluginChain {
     pub sound_gen: SinglePlugin,
     pub effects: Vec<SinglePlugin>,
 }
 
-// #[pyclass]
+#[pyclass]
 pub struct Mixer {
     // _thread_jh: JoinHandle<()>,
     // send: Sender<()>,
@@ -24,7 +22,7 @@ pub struct Mixer {
     channels: [Option<PluginChain>; N_CHANNELS],
 }
 
-// #[pymethods]
+#[pymethods]
 impl Mixer {
     // fn recv(&self) -> Option<Vec<u8>> {
     //     self.recv.try_iter().last()
@@ -41,7 +39,7 @@ impl Mixer {
     }
 }
 
-// #[pyfunction]
+#[pyfunction]
 fn run() -> Mixer {
     env_logger::builder().format_timestamp(None).init();
     let channels = [const { None }; N_CHANNELS];
@@ -51,11 +49,11 @@ fn run() -> Mixer {
     Mixer { channels }
 }
 
-// /// A Python module implemented in Rust.
-// #[pymodule]
-// fn do_daw(m: &Bound<'_, PyModule>) -> PyResult<()> {
-//     m.add_class::<Mixer>()?;
-//
-//     m.add_function(wrap_pyfunction!(run, m)?)?;
-//     Ok(())
-// }
+/// A Python module implemented in Rust.
+#[pymodule]
+fn do_daw(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add_class::<Mixer>()?;
+
+    m.add_function(wrap_pyfunction!(run, m)?)?;
+    Ok(())
+}
