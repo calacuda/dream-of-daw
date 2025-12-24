@@ -29,3 +29,12 @@ clock = pygame.time.Clock()
 done = False
 log = get_logger("Stepper-Synth", DEBUG)
 controller = Buttons()
+
+if __name__ == "__main__":
+    log.info("starting main loop.")
+
+    while not handle_pygame_events():
+        pass
+
+    log.info("DONE")
+    log.info("GOODBYE")
