@@ -1,0 +1,7 @@
+import os
+
+os.environ['HOME'] = "/userdata/system/"
+script_dir = os.path.dirname(os.path.abspath(__file__))
+os.chdir(script_dir)
+
+# os.system("./do_daw")
