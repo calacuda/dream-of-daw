@@ -65,7 +65,7 @@ impl Mixer {
             let mut allpass = DirectForm1::<f32>::new(coeffs);
 
             move |data| {
-                // Create audio buffers (planar format - separate buffer per channel)
+                // Create audio buffers
                 let mut pre_master_buss: Vec<Vec<Sample>> =
                     (0..BUFFER_FRAMES).map(|_| Vec::with_capacity(N_CHANNELS)).collect();
 
@@ -79,17 +79,9 @@ impl Mixer {
                         }
                     });
 
-                // if let Err(e) = channels[0]
-                //     .write()
-                //     .map(|mut unlocked_channel| unlocked_channel.get_samples(BUFFER_FRAMES).map(|samples| samples.into_iter().enumerate().for_each(|(i, sample)| pre_master_buss[i].push(sample)))) {
-                //     error!("{e}");
-                // }
-
-
                 let pre_master_bus: Vec<Sample> = pre_master_buss.iter().map(|samples| { 
                     let sample: Sample =  samples.into_iter().sum();
                     allpass.run(sample).tanh()
-                    // sample
                 }).collect();
 
 
@@ -267,15 +259,6 @@ pub fn load_plugin(plugin_name: &str) -> Option<SinglePlugin> {
     plugin.ok()
 }
 
-// #[pyfunction]
-// fn run() -> Mixer {
-//     env_logger::builder().format_timestamp(None).init();
-//     let channels = [const { None }; N_CHANNELS];
-//     let effects = Vec::new();
-//
-//     Mixer { channels, effects }
-// }
-
 /// A Python module implemented in Rust.
 #[pymodule]
 fn do_daw(m: &Bound<'_, PyModule>) -> PyResult<()> {
@@ -327,9 +310,9 @@ mod test {
 
         sleep(Duration::from_secs(5));
 
-        // if let Some(plugin) = &mixer.channels[chan].read().unwrap().sound_gen { 
-        //     log::debug!("sound_gen = {:?}", plugin.info().name.clone());
-        // }
+        if let Some(plugin) = &mixer.channels[chan].read().unwrap().sound_gen { 
+            log::debug!("sound_gen = {:?}", plugin.info().name.clone());
+        }
 
         // panic!("foobar");
     }
