@@ -88,7 +88,7 @@ impl Mixer {
 
                 let pre_master_bus: Vec<Sample> = pre_master_buss.iter().map(|samples| { 
                     let sample: Sample =  samples.into_iter().sum();
-                    allpass.run(sample * 0.75).tanh()
+                    allpass.run(sample).tanh()
                     // sample
                 }).collect();
 
