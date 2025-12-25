@@ -24,7 +24,7 @@ impl PluginChain {
 
             let mut input = output.clone();
 
-            for effect in self.effects.iter_mut() {
+            self.effects.iter_mut().for_each(|effect| {
                 let mut output = vec![0.0f32; buffer_size];
 
                 if let Err(e) = effect.process(&[&input], &mut [&mut output], buffer_size) {
@@ -35,7 +35,7 @@ impl PluginChain {
                 } else {
                     input = output.clone();
                 }
-            }
+            });
 
             Some(input)
         } else {
