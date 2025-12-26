@@ -41,7 +41,6 @@ for (name, path) in mixer.get_plugin_list():
 
 
 def clear_screen():
-    # print(BACKGROUND_COLOR)
     screen.fill(BACKGROUND_COLOR)
 
 
@@ -135,7 +134,7 @@ if __name__ == "__main__":
     setup()
 
     # mixer.set_instrument(0, "Wt Synth")
-    #
+
     # mixer.play_notes([60, 64, 67], 0)
     # sleep(2.5)
     # mixer.stop_notes([60, 64, 67], 0)
