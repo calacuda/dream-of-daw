@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from do_daw import Mixer
+from do_daw import run
 import platform
 from dream_of_daw.logger import get_logger
 from dream_of_daw.step_buttons import draw_steps_buttons
@@ -35,7 +35,7 @@ clock = pygame.time.Clock()
 done = False
 log = get_logger("Dreams-Of-DAW", DEBUG)
 controller = Buttons()
-mixer = Mixer()
+(stepper, mixer) = run()
 for (name, path) in mixer.get_plugin_list():
     log.info(f"found plugin: {name}, at path {path}")
 
@@ -126,18 +126,30 @@ def loop():
     pygame.display.update()
 
 
+def play_chord():
+    from time import sleep
+    from threading import Thread
+
+    notes = [60, 64, 67]
+    mixer.set_instrument(0, "Wt Synth")
+    mixer.play_notes(notes, 0)
+
+    def stop_notes():
+        sleep(2.5)
+        mixer.stop_notes(notes, 0)
+
+    t = Thread(target=stop_notes)
+    t.start()
+
+    return t
+
+
 if __name__ == "__main__":
-    # from time import sleep
+    t = play_chord()
 
     log.info("starting main loop.")
     clear_screen()
     setup()
-
-    # mixer.set_instrument(0, "Wt Synth")
-
-    # mixer.play_notes([60, 64, 67], 0)
-    # sleep(2.5)
-    # mixer.stop_notes([60, 64, 67], 0)
 
     while not handle_pygame_events():
         loop()

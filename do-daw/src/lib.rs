@@ -19,8 +19,11 @@ pub type Sample = f32;
 
 #[pyfunction]
 /// Builds the Mixer, Step-Sequencer and makes threads for them where applicable
-fn run() -> StepSequencer {
-    StepSequencer::new()
+fn run() -> (StepSequencer, Mixer) {
+    env_logger::builder().format_timestamp(None).init();
+    let (mixer, dev) = Mixer::new();
+
+    (StepSequencer::new(mixer.clone(), dev), mixer)
 }
 
 /// A Python module implemented in Rust.

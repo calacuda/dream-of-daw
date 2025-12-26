@@ -5,16 +5,16 @@ use tinyaudio::OutputDevice;
 #[pyclass(unsendable)]
 pub struct StepSequencer {
     // pub mixer: PyCell<Mixer>,
-    #[pyo3(set)]
+    // #[pyo3(get)]
     pub mixer: Mixer,
     _device: OutputDevice,
 }
 
-#[pymethods]
+// #[pymethods]
 impl StepSequencer {
-    #[new]
-    pub fn new() -> Self {
-        let (mixer, _device) = Mixer::new();
+    // #[new]
+    pub fn new(mixer: Mixer, _device: OutputDevice) -> Self {
+        // let (mixer, _device) = Mixer::new();
 
         Self { mixer, _device }
     }
@@ -36,13 +36,14 @@ mod test {
 
     use rack::*;
 
-    use crate::{N_CHANNELS, step_sequencer::StepSequencer};
+    use crate::{N_CHANNELS, mixer::Mixer, step_sequencer::StepSequencer};
 
     #[test]
     fn audio_ouptut() {
         // env_logger::builder().format_timestamp(None).init();
 
-        let mut seq = StepSequencer::new();
+        let (mixer, dev) = Mixer::new();
+        let mut seq = StepSequencer::new(mixer, dev);
         let chan = 0;
 
         for chan in 0..N_CHANNELS {

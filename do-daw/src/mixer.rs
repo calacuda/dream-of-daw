@@ -24,7 +24,6 @@ pub struct Mixer {
 impl Mixer {
     // #[new]
     pub fn new() -> (Self, OutputDevice) {
-        env_logger::builder().format_timestamp(None).init();
         let channels: Arc<Vec<_>> = Arc::new(
             (0..N_CHANNELS).map(|_| Arc::new(RwLock::new(PluginChain::default()))).collect()
         );
@@ -273,3 +272,52 @@ pub fn load_plugin(plugin_name: &str) -> Option<SinglePlugin> {
 
     plugin.ok()
 }
+
+// #[cfg(test)]
+// mod test {
+//     use std::{thread::sleep, time::Duration};
+//
+//     use rack::*;
+//
+//     use crate::{mixer::Mixer, N_CHANNELS};
+//
+//     #[test]
+//     fn audio_ouptut() {
+//         // env_logger::builder().format_timestamp(None).init();
+//
+//         let (mut mixer, _dev) = Mixer::new();
+//         let chan = 0;
+//
+//         for chan in 0..N_CHANNELS {
+//             mixer.set_instrument(chan, "Wt Synth".into());
+//         }
+//
+//         let on_events = vec![
+//             MidiEvent::note_on(60, 100, 0, 0), // Middle C (C4), velocity 100, channel 0
+//             MidiEvent::note_on(64, 100, 0, 0), // E4
+//             MidiEvent::note_on(67, 100, 0, 0), // G4
+//         ];
+//         // info!("instrument loaded");
+//
+//
+//         if let Ok(mut channel) = mixer.channels[chan].write() {
+//             if let Some(sound_gen) = &mut channel.sound_gen {
+//                 if let Err(e) = sound_gen.send_midi(&on_events) {
+//                     panic!("sending midi failed with error {e}");
+//                 }
+//             } else {
+//                 panic!("no sound generator");
+//             }
+//         } else {
+//             panic!("failed to write channel {chan}");
+//         }
+//
+//         sleep(Duration::from_secs(5));
+//
+//         if let Some(plugin) = &mixer.channels[chan].read().unwrap().sound_gen { 
+//             log::debug!("sound_gen = {:?}", plugin.info().name.clone());
+//         }
+//
+//         // panic!("foobar");
+//     }
+// }
