@@ -24,15 +24,15 @@ def draw_a_button(i, button_grid_x, button_grid_y, selected: bool, playing: bool
     else:
         led_color = SURFACE_2
 
-    # TODO: add a text display for the playing note
-
     button = pygame.Rect(center_x, center_y, button_w, button_h)
     button.center = (center_x, center_y)
     pygame.draw.rect(screen, outline_color, button,
-                     BUTTON_BOARDER_W, border_radius=5)
+                     BUTTON_BOARDER_W, border_radius=BOARDER_RADIUS)
     y = button.bottom - BUTTON_BOARDER_W * 4
     pygame.draw.line(screen, led_color, (button.left + BUTTON_BOARDER_W *
-                     3.5, y), (button.right - BUTTON_BOARDER_W * 3.5, y), 5)
+                     3.5, y), (button.right - BUTTON_BOARDER_W * 3.5, y), BOARDER_RADIUS)
+
+    # TODO: add a text display for the playing note
 
 
 def draw_steps_buttons():
