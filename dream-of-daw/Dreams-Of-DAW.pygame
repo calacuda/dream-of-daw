@@ -1,15 +1,16 @@
 #!/usr/bin/python
+from do_daw import Mixer
+import platform
+from dream_of_daw.logger import get_logger
+from dream_of_daw.step_buttons import draw_steps_buttons
+from dream_of_daw.controls import *
+from dream_of_daw.config import *
+from logging import DEBUG
+import pygame
 import os
 from dataclasses import dataclass
 from typing import Callable, Tuple
 from dream_of_daw.config import SCREEN_HEIGHT, SCREEN_WIDTH
-import pygame
-from logging import DEBUG, INFO
-from dream_of_daw.config import *
-from dream_of_daw.controls import *
-from dream_of_daw.logger import get_logger
-import platform
-from do_daw import Mixer
 
 if "aarch64" in platform.machine():
     os.environ['HOME'] = "/userdata/system/"
@@ -22,7 +23,7 @@ os.chdir(THIS_DIR)
 pygame.init()
 controller_found = False
 joy = None
-screen = pygame.display.set_mode(SCREEN_SIZE)
+# screen = pygame.display.set_mode(SCREEN_SIZE)
 pygame.font.init()
 fonts = [
     pygame.font.Font(f'{THIS_DIR}/Anonymous-Pro.ttf', 45),  # 0
@@ -113,16 +114,19 @@ def handle_pygame_events():
 
 def setup():
     pass
-    box_rect = pygame.Rect(0, 0,
-                           SCREEN_WIDTH, SCREEN_HEIGHT * 0.1)
-    pygame.draw.rect(screen, RED, box_rect)
-    box_rect = pygame.Rect(SIDE_BARS_W + MAIN_VIEW_W * 0.2, SCREEN_CENTER[1] + (SCREEN_CENTER[1] - BUTTON_H * 2),
-                           MAIN_VIEW_W * 0.8, BUTTON_H * 2)
-    pygame.draw.rect(screen, RED, box_rect)
+    # box_rect = pygame.Rect(0, 0,
+    #                        SCREEN_WIDTH, SCREEN_HEIGHT * 0.1)
+    # pygame.draw.rect(screen, RED, box_rect)
+    # box_rect = pygame.Rect(SIDE_BARS_W + MAIN_VIEW_W * 0.2, SCREEN_CENTER[1] + (SCREEN_CENTER[1] - BUTTON_H * 2),
+    #                        MAIN_VIEW_W * 0.8, BUTTON_H * 2)
+    # pygame.draw.rect(screen, RED, box_rect)
 
 
 def loop():
-    # clear_screen()
+    clear_screen()
+
+    draw_steps_buttons()
+
     pygame.display.update()
 
 
@@ -130,6 +134,7 @@ if __name__ == "__main__":
     # from time import sleep
 
     log.info("starting main loop.")
+    clear_screen()
     setup()
 
     # mixer.set_instrument(0, "Wt Synth")
