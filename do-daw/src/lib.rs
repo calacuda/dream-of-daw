@@ -137,6 +137,38 @@ impl Mixer {
         plugins.into_iter().map(|p| (p.name, p.path)).collect()
     }
 
+    pub fn play_notes(&mut self, notes: Vec<u8>, channel: usize) {
+        let on_events: Vec<MidiEvent> = notes.into_iter().map(|note| MidiEvent::note_on(note, 100, 0, 0)).collect();
+
+        if let Ok(mut channel) = self.channels[channel].write() {
+            if let Some(sound_gen) = &mut channel.sound_gen {
+                if let Err(e) = sound_gen.send_midi(&on_events) {
+                    error!("sending midi failed with error {e}");
+                }
+            } else {
+                error!("no sound generator");
+            }
+        } else {
+            error!("failed to write channel {channel}");
+        }
+    }
+
+    pub fn stop_notes(&mut self, notes: Vec<u8>, channel: usize) {
+        let on_events: Vec<MidiEvent> = notes.into_iter().map(|note| MidiEvent::note_off(note, 100, 0, 0)).collect();
+
+        if let Ok(mut channel) = self.channels[channel].write() {
+            if let Some(sound_gen) = &mut channel.sound_gen {
+                if let Err(e) = sound_gen.send_midi(&on_events) {
+                    error!("sending midi failed with error {e}");
+                }
+            } else {
+                error!("no sound generator");
+            }
+        } else {
+            error!("failed to write channel {channel}");
+        }
+    }
+
     /// sets the note at step of channel in section
     pub fn set_note(&mut self, section: usize, channel: usize, step: usize) {
         // TODO: add note to sequence

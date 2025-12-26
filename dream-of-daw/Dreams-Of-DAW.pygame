@@ -9,6 +9,7 @@ from dream_of_daw.config import *
 from dream_of_daw.controls import *
 from dream_of_daw.logger import get_logger
 import platform
+from do_daw import Mixer
 
 if "aarch64" in platform.machine():
     os.environ['HOME'] = "/userdata/system/"
@@ -33,6 +34,9 @@ clock = pygame.time.Clock()
 done = False
 log = get_logger("Dreams-Of-DAW", DEBUG)
 controller = Buttons()
+mixer = Mixer()
+for (name, path) in mixer.get_plugin_list():
+    log.info(f"found plugin: {name}, at path {path}")
 
 
 def clear_screen():
@@ -123,8 +127,16 @@ def loop():
 
 
 if __name__ == "__main__":
+    # from time import sleep
+
     log.info("starting main loop.")
     setup()
+
+    # mixer.set_instrument(0, "Wt Synth")
+    #
+    # mixer.play_notes([60, 64, 67], 0)
+    # sleep(2.5)
+    # mixer.stop_notes([60, 64, 67], 0)
 
     while not handle_pygame_events():
         loop()
