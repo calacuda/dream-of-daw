@@ -14,10 +14,10 @@ pub struct PluginChain {
 impl PluginChain {
     pub fn get_samples(&mut self, buffer_size: usize) -> Option<Vec<Sample>> {
         if let Some(sound_gen) = &mut self.sound_gen {
-            trace!(
-                "sound generator is located @ {}",
-                sound_gen.info().path.display()
-            );
+            // trace!(
+            //     "sound generator is located @ {}",
+            //     sound_gen.info().path.display()
+            // );
 
             let mut output = vec![0.0f32; buffer_size];
             if let Err(e) = sound_gen.process(&[], &mut [&mut output], buffer_size) {

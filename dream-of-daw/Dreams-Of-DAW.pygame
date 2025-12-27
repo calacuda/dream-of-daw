@@ -131,12 +131,17 @@ def play_chord():
     from threading import Thread
 
     notes = [60, 64, 67]
-    mixer.set_instrument(0, "Wt Synth")
-    mixer.play_notes(notes, 0)
+
+    n_channels = 2
+
+    for i in range(n_channels):
+        mixer.set_instrument(i, "Wt Synth")
+        mixer.play_notes(notes, i)
 
     def stop_notes():
         sleep(2.5)
-        mixer.stop_notes(notes, 0)
+        for i in range(n_channels):
+            mixer.stop_notes(notes, i)
 
     t = Thread(target=stop_notes)
     t.start()
