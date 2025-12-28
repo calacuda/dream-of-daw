@@ -3,10 +3,31 @@ use crate::{Sample, SinglePlugin, BUFFER_FRAMES, N_CHANNELS, N_EFFECTS, SAMPLE_R
 use log::*;
 use pyo3::prelude::*;
 use rack::prelude::*;
+use rayon::{current_num_threads, prelude::*};
 use std::path::PathBuf;
 use std::sync::{Arc, RwLock};
 use tinyaudio::{run_output_device, OutputDevice, OutputDeviceParameters};
 use biquad::*;
+
+struct Multizip<T>(Vec<T>);
+
+impl<T> Iterator for Multizip<T>
+where
+    T: Iterator,
+{
+    type Item = Vec<T::Item>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.0.is_empty() {
+            return None;
+        }
+
+        let item: Vec<Option<T::Item>> = self.0.iter_mut().map(|iter| iter.next()).collect();
+        let item: Option<Vec<T::Item>> = item.into_iter().collect();
+
+        item
+    }
+}
 
 #[pyclass]
 #[derive(Clone)]
@@ -47,32 +68,135 @@ impl Mixer {
             let coeffs =
                 Coefficients::<f32>::from_params(Type::AllPass, fs, f0, Q_BUTTERWORTH_F32).unwrap();
             let mut allpass = DirectForm1::<f32>::new(coeffs);
+            // let mut allpass = AllPass::new(1.0, SAMPLE_RATE, 0.5);
+            // let chunk_size = BUFFER_FRAMES / current_num_threads();
+            info!("BUFFER_FRAMES = {BUFFER_FRAMES}");
+            // info!("num parallel = {:?}", std::thread::available_parallelism());
+            info!("num threads (default) = {}", current_num_threads());
+            // info!("chunk_size = {chunk_size}");
+            // rayon::ThreadPoolBuilder::new().use_current_thread().num_threads(3).build_global().unwrap();
+            // rayon::ThreadPoolBuilder::new().use_current_thread().build_global().unwrap();
+            // info!("num_threads (customized) = {}", current_num_threads());
 
             move |data| {
                 // Create audio buffers
-                let mut pre_master_buss: Vec<Vec<Sample>> =
-                    (0..BUFFER_FRAMES).map(|_| Vec::with_capacity(N_CHANNELS)).collect();
+                // let mut pre_master_buss: Vec<Vec<Sample>> =
+                //     (0..BUFFER_FRAMES).map(|_| Vec::with_capacity(N_CHANNELS)).collect();
 
-                channels
-                    .iter()
-                    .for_each(|locked_channel| {
-                        if let Err(e) = locked_channel
-                            .write()
-                            .map(|mut unlocked_channel| unlocked_channel.get_samples(BUFFER_FRAMES).map(|samples| samples.into_iter().enumerate().for_each(|(i, sample)| pre_master_buss[i].push(sample)))) {
-                            error!("{e}");
-                        }
-                    });
+                // let mut generated_samples = channels
+                //     .par_iter()
+                //     .filter_map(|locked_channel| {
+                //         let chan_samples = locked_channel
+                //             .write()
+                //             .map(|mut unlocked_channel| unlocked_channel.get_samples(BUFFER_FRAMES));
+                //
+                //         match chan_samples {
+                //             Ok(samples) => samples,
+                //             Err(e) => {
+                //                 error!("{e}");
+                //                 None
+                //             }
+                //         }
+                //     });
+                //
+                // generated_samples.for_each(|chan_samples| {
+                //     chan_samples.into_iter().enumerate().for_each(|(i, sample)| pre_master_buss[i].push(sample));
+                // });
+               
+                // let mut m_zip = {
+                let pre_master_bus: Vec<Sample> = {
+                    // debug!("new buffer");
 
-                let pre_master_bus: Vec<Sample> = pre_master_buss.iter().map(|samples| { 
-                    let sample: Sample =  samples.into_iter().sum();
-                    allpass.run(sample).tanh()
-                }).collect();
+                    let  m_zip = {
+                        let samples_by_channel: Vec<std::vec::IntoIter<Sample>> = channels
+                            // .iter()
+                            // .filter(|locked_channel| {
+                            //     locked_channel
+                            //         .read()
+                            //         .is_ok_and(|unlocked_channel| unlocked_channel.sound_gen.is_some()) 
+                            // }).into_iter()
+                            // .collect::<Vec<_>>()
+                            .par_iter()
+                            .filter_map(|locked_channel| {
+                                let chan_samples = locked_channel
+                                    .write()
+                                    .map(|mut unlocked_channel| unlocked_channel.get_samples(BUFFER_FRAMES));
 
+                                match chan_samples {
+                                    Ok(samples) => samples.map(|samples| samples.into_iter()),
+                                    Err(e) => {
+                                        error!("{e}");
+                                        None
+                                    }
+                                }
+                            }).collect();
+                        Multizip(samples_by_channel)
+                    };
+
+                    // debug!("made buffer");
+                    // let chunked_samples: Vec<_> = std::iter::from_fn(move || {
+                    //     Some(m_zip.by_ref().take(chunk_size).collect()).filter(|chunk: &Vec<_>| !chunk.is_empty())
+                    // }).collect();
+
+                    m_zip.into_iter().map(|samples: Vec<Sample>| { 
+                        let sample: Sample = samples.iter().sum();
+                        // allpass.tick(sample.into()).tanh() as f32
+                        allpass.run(sample).tanh()
+                        // sample.tanh()
+                    }).collect()
+                    
+                    // chunked_samples.par_iter().map(|chunk: &Vec<Vec<Sample>>| { 
+                    //     chunk.into_iter().map(move |samples| {
+                    //         // let sample: Sample =  samples.into_iter().sum();
+                    //         let sample: Sample = samples.into_iter().sum();
+                    //         // allpass.run(sample).tanh()
+                    //         sample.tanh()
+                    //     }).collect::<Vec<_>>()
+                    // }).flatten().collect()
+                };
+
+                // debug!("normalized samples");
+
+                // let chunked_samples: Vec<_> = std::iter::from_fn(move || {
+                //     Some(m_zip.by_ref().take(chunk_size).collect()).filter(|chunk: &Vec<_>| !chunk.is_empty())
+                // }).collect();
+                // let pre_master_bus: Vec<Sample> = chunked_samples.par_iter().map(|chunk| { 
+                // let pre_master_bus: Vec<Sample> = m_zip.map(|samples| { 
+                //     // chunk.into_iter().map(move |samples| {
+                //         // let sample: Sample =  samples.into_iter().sum();
+                //         let sample: Sample = samples.into_iter().sum();
+                //         // allpass.run(sample).tanh()
+                //         sample.tanh()
+                //     // }).collect::<Vec<_>>()
+                // }).collect();
+
+                // debug!("made pre_master_bus");
+
+                // let (rms, peak) = analyze_buffer(&pre_master_bus);
+                // debug!("pre-effects => RMS={:6.4} Peak={:6.4}", rms, peak);
 
                 let post_master_bus = if let Ok(mut effects) = effects.write() {
-                    let mut input = pre_master_bus.clone();
+                    // let mut input = pre_master_bus.clone();
+                    // let mut input = pre_master_bus;
 
-                    effects.iter_mut().for_each(|effect| {
+                    // effects.iter_mut().for_each(|effect| {
+                    //     let mut output = vec![0.0f32; BUFFER_FRAMES];
+                    //
+                    //     if let Err(e) = effect.process(&[&input], &mut [&mut output], BUFFER_FRAMES) {
+                    //         warn!(
+                    //             "effect plugin @ path {} attempted to produce output but failed with error {e}",
+                    //             effect.info().path.display()
+                    //         );
+                    //     } else {
+                    //         input = output;
+                    //     }
+                    // });
+                    //
+                    // input
+
+                    let input = pre_master_bus;
+
+                    let output = effects.iter_mut().fold(input, |input, effect| {
                         let mut output = vec![0.0f32; BUFFER_FRAMES];
 
                         if let Err(e) = effect.process(&[&input], &mut [&mut output], BUFFER_FRAMES) {
@@ -80,18 +204,18 @@ impl Mixer {
                                 "effect plugin @ path {} attempted to produce output but failed with error {e}",
                                 effect.info().path.display()
                             );
-                        } else {
-                            input = output.clone();
                         }
+
+                        output
                     });
-                    
-                    input
+
+                    output
                 } else {
                     pre_master_bus
                 };
 
-
-
+                // let (rms, peak) = analyze_buffer(&post_master_bus);
+                // debug!("post-effects => RMS={:6.4} Peak={:6.4}", rms, peak);
 
                 for (samples, value) in data
                     .chunks_mut(params.channels_count)
@@ -271,6 +395,24 @@ pub fn load_plugin(plugin_name: &str) -> Option<SinglePlugin> {
     }
 
     plugin.ok()
+}
+
+/// Calculate RMS and peak levels for left and right channels (planar format)
+fn analyze_buffer(audio: &[f32]) -> (f32, f32) {
+    let frames = audio.len();
+
+    let mut sum_right = 0.0f32;
+    let mut peak_right = 0.0f32;
+
+    for i in 0..frames {
+        sum_right += audio[i] * audio[i];
+
+        peak_right = peak_right.max(audio[i].abs());
+    }
+
+    let rms_right = (sum_right / frames as f32).sqrt();
+
+    (rms_right, peak_right)
 }
 
 // #[cfg(test)]

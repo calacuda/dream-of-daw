@@ -12,7 +12,7 @@ pub const N_CHANNELS: usize = 4;
 pub const N_EFFECTS: usize = 3;
 pub const N_SECTIONS: usize = 8;
 pub const SAMPLE_RATE: usize = 48000;
-pub const BUFFER_FRAMES: usize = 128;
+pub const BUFFER_FRAMES: usize = 512;
 
 pub type SinglePlugin = Vst3Plugin;
 pub type Sample = f32;

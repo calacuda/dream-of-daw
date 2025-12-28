@@ -131,17 +131,25 @@ def play_chord():
     from threading import Thread
 
     notes = [60, 64, 67]
+    # notes = [60]
 
-    n_channels = 2
+    n_channels = 4
 
     for i in range(n_channels):
         mixer.set_instrument(i, "Wt Synth")
         mixer.play_notes(notes, i)
 
+    # mixer.play_notes(notes, 0)
+
     def stop_notes():
-        sleep(2.5)
+        sleep(5)
         for i in range(n_channels):
             mixer.stop_notes(notes, i)
+
+        # mixer.stop_notes(notes, 0)
+        sleep(1)
+        quit_event = pygame.event.Event(pygame.QUIT)
+        pygame.event.post(quit_event)
 
     t = Thread(target=stop_notes)
     t.start()
@@ -150,6 +158,8 @@ def play_chord():
 
 
 if __name__ == "__main__":
+    # from sys import exit
+
     t = play_chord()
 
     log.info("starting main loop.")
@@ -159,5 +169,8 @@ if __name__ == "__main__":
     while not handle_pygame_events():
         loop()
 
+    pygame.quit()
     log.info("DONE")
     log.info("GOODBYE")
+
+    # exit()
