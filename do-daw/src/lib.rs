@@ -1,4 +1,7 @@
-use crate::{mixer::Mixer, step_sequencer::StepSequencer};
+use crate::{
+    mixer::Mixer,
+    step_sequencer::{StepSequence, StepSequencer, StepState},
+};
 use pyo3::prelude::*;
 use rack::vst3::Vst3Plugin;
 
@@ -17,8 +20,8 @@ pub const BUFFER_FRAMES: usize = 512;
 pub type SinglePlugin = Vst3Plugin;
 pub type Sample = f32;
 
-#[pyfunction]
 /// Builds the Mixer, Step-Sequencer and makes threads for them where applicable
+#[pyfunction]
 fn run() -> (StepSequencer, Mixer) {
     env_logger::builder().format_timestamp(None).init();
     let (mixer, dev) = Mixer::new();
@@ -31,6 +34,8 @@ fn run() -> (StepSequencer, Mixer) {
 fn do_daw(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Mixer>()?;
     m.add_class::<StepSequencer>()?;
+    m.add_class::<StepSequence>()?;
+    m.add_class::<StepState>()?;
 
     m.add_function(wrap_pyfunction!(run, m)?)?;
 
