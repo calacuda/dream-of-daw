@@ -158,9 +158,7 @@ def play_chord():
 
 
 if __name__ == "__main__":
-    # from sys import exit
-
-    t = play_chord()
+    # t = play_chord()
 
     log.info("starting main loop.")
     clear_screen()
@@ -172,5 +170,3 @@ if __name__ == "__main__":
     pygame.quit()
     log.info("DONE")
     log.info("GOODBYE")
-
-    # exit()
