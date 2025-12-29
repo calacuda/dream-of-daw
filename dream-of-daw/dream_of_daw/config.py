@@ -40,10 +40,23 @@ MAIN_VIEW_W = SCREEN_WIDTH * 0.75
 BUTTON_H = SCREEN_CENTER[1] * 0.75 / 2
 HINT_BAR_H = SCREEN_HEIGHT * 0.1
 
-STEP_BUTTON_BOUNDING_BOX = pygame.Rect(SIDE_BARS_W + MAIN_VIEW_W * 0.2, SCREEN_CENTER[1] + (
-    SCREEN_CENTER[1] - BUTTON_H * 2), MAIN_VIEW_W * 0.8, BUTTON_H * 2)
+STEP_BUTTON_BOUNDING_BOX = pygame.Rect(SIDE_BARS_W + MAIN_VIEW_W * 0.2,
+                                       SCREEN_CENTER[1] + (
+                                           SCREEN_CENTER[1] -
+                                           BUTTON_H * 2),
+                                       MAIN_VIEW_W * 0.8, BUTTON_H * 2)
 BUTTON_BOARDER_W = int((STEP_BUTTON_BOUNDING_BOX.width / 8) * 0.06)
 BOARDER_RADIUS = 5
+
+PIANO_W = MAIN_VIEW_W
+PIANO_H = SCREEN_CENTER[1] - STEP_BUTTON_BOUNDING_BOX.height
+# PIANO_SPINE_W = PIANO_W / 88
+# white-keys-per-octave * n-full-octaves + len([a0, b0, c8])
+n_white_keys = 7 * 7
+PIANO_BLACK_H = PIANO_H * 0.5
+OCTAVE_W = PIANO_W / 7
+PIANO_WHITE_W = OCTAVE_W / 7
+PIANO_BLACK_W = OCTAVE_W / 12
 
 
 def select_mod_pressed(controller):

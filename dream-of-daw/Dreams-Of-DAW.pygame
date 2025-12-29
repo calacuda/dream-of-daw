@@ -1,16 +1,17 @@
 #!/usr/bin/python
+from dream_of_daw.config import SCREEN_HEIGHT, SCREEN_WIDTH
+from dataclasses import dataclass
+import os
+import pygame
+from logging import DEBUG
+from dream_of_daw.config import *
 from do_daw import run, midi_note
 import platform
 from dream_of_daw.logger import get_logger
 from dream_of_daw.step_buttons import draw_steps_buttons
+from dream_of_daw.piano import draw_piano
 from dream_of_daw.controls import *
-from dream_of_daw.config import *
-from logging import DEBUG
-import pygame
-import os
-from dataclasses import dataclass
 from typing import Callable, Tuple
-from dream_of_daw.config import SCREEN_HEIGHT, SCREEN_WIDTH
 
 if "aarch64" in platform.machine():
     os.environ['HOME'] = "/userdata/system/"
@@ -137,8 +138,10 @@ def loop():
     # - when the stepper is playing,
     # - the playing step index,
     # - a list of the midi notes for the current channel
+    # - cursor position
 
-    # draw_piano(playing, step_i, midi_notes)
+    cursor_position = 0
+    draw_piano(playing, step_i, midi_notes, cursor_position)
 
     # TODO: write draw_channel_switcher fucntion. it will show the menu to
     # switch between channels
