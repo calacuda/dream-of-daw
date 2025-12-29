@@ -95,7 +95,7 @@ impl StepSequencer {
             .collect();
         let steps: Arc<[Arc<[RwLock<StepSequence>]>]> = steps.into();
 
-        let bpm: Arc<AtomicUsize> = Arc::new(90.into());
+        let bpm: Arc<AtomicUsize> = Arc::new(60.into());
 
         let _jh = spawn({
             let mixer = mixer.clone();
