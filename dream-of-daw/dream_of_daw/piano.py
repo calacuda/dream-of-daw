@@ -34,37 +34,37 @@ def draw_piano(playing, step_i, midi_notes, cursor_position):
     white_i = 0
     black_i = 0
 
-    for (i, midi_note) in enumerate(range(24, 108)):
-        if note_is_natural(midi_note):
-            color = TEXT
-            offset = OCTAVE_W * (i // 12)
-            key = white_keys[white_i]
-            key.left += offset + (white_i % 7) * key.width
-            key.width *= 0.9
-            white_i += 1
+    for (i, midi_note) in [i for i in enumerate(range(24, 108)) if note_is_natural(i[1])]:
+        # if note_is_natural(midi_note):
+        color = TEXT
+        offset = OCTAVE_W * (i // 12)
+        key = white_keys[white_i]
+        key.left += offset + (white_i % 7) * key.width
+        key.width *= 0.9
+        white_i += 1
 
-            if (midi_note == midi_notes[step_i] and playing) or midi_note == midi_notes[cursor_position]:
-                color = SURFACE_2
+        if (midi_note == midi_notes[step_i] and playing) or midi_note == midi_notes[cursor_position]:
+            color = SURFACE_2
 
-            pygame.draw.rect(
-                screen, color, key, border_radius=BOARDER_RADIUS,
-                border_top_left_radius=0 if i else BOARDER_RADIUS,
-                border_top_right_radius=0 if white_i != n_white_keys else BOARDER_RADIUS
-            )
+        pygame.draw.rect(
+            screen, color, key, border_radius=BOARDER_RADIUS,
+            border_top_left_radius=0 if i else BOARDER_RADIUS,
+            border_top_right_radius=0 if white_i != n_white_keys else BOARDER_RADIUS
+        )
 
-    for (i, midi_note) in enumerate(range(24, 108)):
-        if not note_is_natural(midi_note):
-            color = CRUST
-            offset = OCTAVE_W * (i // 12)
-            # print(f"n black key {len(black_keys)}, black_i {black_i}, i: {i}")
-            key = black_keys[black_i]
-            key.left = PIANO_BLACK_W * (i % 12) + offset + SIDE_BARS_W
-            black_i += 1
+    for (i, midi_note) in [i for i in enumerate(range(24, 108)) if not note_is_natural(i[1])]:
+        # if not note_is_natural(midi_note):
+        color = CRUST
+        offset = OCTAVE_W * (i // 12)
+        # print(f"n black key {len(black_keys)}, black_i {black_i}, i: {i}")
+        key = black_keys[black_i]
+        key.left = PIANO_BLACK_W * (i % 12) + offset + SIDE_BARS_W
+        black_i += 1
 
-            if (midi_note == midi_notes[step_i] and playing) or midi_note == midi_notes[cursor_position]:
-                color = SURFACE_2
+        if (midi_note == midi_notes[step_i] and playing) or midi_note == midi_notes[cursor_position]:
+            color = SURFACE_2
 
-            pygame.draw.rect(
-                screen, color, key, border_radius=BOARDER_RADIUS,
-                border_top_left_radius=0, border_top_right_radius=0
-            )
+        pygame.draw.rect(
+            screen, color, key, border_radius=BOARDER_RADIUS,
+            border_top_left_radius=0, border_top_right_radius=0
+        )
