@@ -2,16 +2,16 @@ import pygame
 from .config import *
 
 
-def mk_white_key(i):
+def mk_white_key():
     key = pygame.Rect(
         SIDE_BARS_W, SCREEN_CENTER[1],
         PIANO_WHITE_W, PIANO_H)
     return key
 
 
-def mk_black_key(i):
+def mk_black_key():
     key = pygame.Rect(
-        SIDE_BARS_W + PIANO_BLACK_W * i, SCREEN_CENTER[1],
+        SIDE_BARS_W, SCREEN_CENTER[1],
         PIANO_BLACK_W, PIANO_BLACK_H)
     return key
 
@@ -29,8 +29,8 @@ def draw_piano(playing, step_i, midi_notes, cursor_position):
         - a list of the midi notes for the current channel
         - the step selected by the cursor
     """
-    white_keys = [mk_white_key(i) for i in range(n_white_keys)]
-    black_keys = [mk_black_key(i) for i in range(88 - n_white_keys)]
+    white_keys = [mk_white_key() for _ in range(n_white_keys)]
+    black_keys = [mk_black_key() for _ in range(5 * N_OCTAVES)]
     white_i = 0
     black_i = 0
 
@@ -43,7 +43,7 @@ def draw_piano(playing, step_i, midi_notes, cursor_position):
         key.width *= 0.9
         white_i += 1
 
-        if (midi_note == midi_notes[step_i] and playing) or midi_note == midi_notes[cursor_position]:
+        if (midi_note == midi_notes[step_i] and playing) or (midi_note == midi_notes[cursor_position] and not playing):
             color = SURFACE_2
 
         pygame.draw.rect(
@@ -56,12 +56,11 @@ def draw_piano(playing, step_i, midi_notes, cursor_position):
         # if not note_is_natural(midi_note):
         color = CRUST
         offset = OCTAVE_W * (i // 12)
-        # print(f"n black key {len(black_keys)}, black_i {black_i}, i: {i}")
         key = black_keys[black_i]
         key.left = PIANO_BLACK_W * (i % 12) + offset + SIDE_BARS_W
         black_i += 1
 
-        if (midi_note == midi_notes[step_i] and playing) or midi_note == midi_notes[cursor_position]:
+        if (midi_note == midi_notes[step_i] and playing) or (midi_note == midi_notes[cursor_position] and not playing):
             color = SURFACE_2
 
         pygame.draw.rect(

@@ -52,7 +52,9 @@ PIANO_W = MAIN_VIEW_W
 PIANO_H = SCREEN_CENTER[1] - STEP_BUTTON_BOUNDING_BOX.height
 # PIANO_SPINE_W = PIANO_W / 88
 # white-keys-per-octave * n-full-octaves + len([a0, b0, c8])
-n_white_keys = 7 * 7
+N_OCTAVES = 7
+n_white_keys = 7 * N_OCTAVES
+n_black_keys = 5 * N_OCTAVES
 PIANO_BLACK_H = PIANO_H * 0.5
 OCTAVE_W = PIANO_W / 7
 PIANO_WHITE_W = OCTAVE_W / 7
