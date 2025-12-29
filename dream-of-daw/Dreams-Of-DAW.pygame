@@ -121,8 +121,9 @@ def setup():
 def loop():
     clear_screen()
     step_i = stepper.get_step()
+    playing = stepper.is_playing()
 
-    draw_steps_buttons(step_i, stepper.is_playing())
+    draw_steps_buttons(step_i, playing)
 
     pygame.display.update()
 
