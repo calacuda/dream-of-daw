@@ -397,6 +397,7 @@ pub fn load_plugin(plugin_name: &str) -> Option<SinglePlugin> {
     plugin.ok()
 }
 
+#[allow(dead_code)]
 /// Calculate RMS and peak levels for left and right channels (planar format)
 fn analyze_buffer(audio: &[f32]) -> (f32, f32) {
     let frames = audio.len();

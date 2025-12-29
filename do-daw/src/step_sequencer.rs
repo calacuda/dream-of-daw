@@ -3,7 +3,6 @@ use log::*;
 use pyo3::prelude::*;
 use rack::prelude::*;
 use std::{
-    ops::Deref,
     sync::{
         Arc, RwLock,
         atomic::{AtomicBool, AtomicUsize, Ordering},
