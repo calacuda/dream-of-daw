@@ -131,6 +131,7 @@ def loop():
         step.note) if step.note is not None else None for step in step_states]
 
     draw_steps_buttons(fonts[1], step_i, playing, note_names)
+    # draw_channel_switcher()
 
     pygame.display.update()
 
