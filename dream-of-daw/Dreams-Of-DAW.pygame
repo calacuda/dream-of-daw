@@ -120,8 +120,9 @@ def setup():
 
 def loop():
     clear_screen()
+    step_i = stepper.get_step()
 
-    draw_steps_buttons()
+    draw_steps_buttons(step_i, stepper.is_playing())
 
     pygame.display.update()
 
@@ -146,8 +147,45 @@ def play_chord():
         for i in range(n_channels):
             mixer.stop_notes(notes, i)
 
+        log.info("done with chord")
+
         # mixer.stop_notes(notes, 0)
         sleep(1)
+
+        quit_event = pygame.event.Event(pygame.QUIT)
+        pygame.event.post(quit_event)
+
+    t = Thread(target=stop_notes)
+    t.start()
+
+    return t
+
+
+def play_arp():
+    from time import sleep
+    from threading import Thread
+
+    for i in range(4):
+        mixer.set_instrument(i, "Wt Synth")
+
+    log.info("start arpegio")
+
+    notes = [60, 64, 67, 71]
+
+    set_note_record = [stepper.set_note(0, 0, i * 4 - 1 if i else i * 4, note)
+                       for (i, note) in enumerate(notes)]
+    set_note_record = [stepper.set_note(0, 0, i, notes[i % len(notes)])
+                       for i in range(16)]
+    log.info(f"record of setting notes {set_note_record}")
+    stepper.start_playing()
+
+    def stop_notes():
+        sleep(5)
+
+        log.info("done with arp")
+
+        sleep(1)
+
         quit_event = pygame.event.Event(pygame.QUIT)
         pygame.event.post(quit_event)
 
@@ -159,6 +197,7 @@ def play_chord():
 
 if __name__ == "__main__":
     # t = play_chord()
+    t = play_arp()
 
     log.info("starting main loop.")
     clear_screen()

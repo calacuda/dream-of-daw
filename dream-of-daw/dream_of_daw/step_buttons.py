@@ -35,9 +35,10 @@ def draw_a_button(i, button_grid_x, button_grid_y, selected: bool, playing: bool
     # TODO: add a text display for the playing note
 
 
-def draw_steps_buttons():
+def draw_steps_buttons(step_i, playing_stepper):
     for i in range(16):
         button_grid_x = i % 8
         button_grid_y = i // 8
 
-        draw_a_button(i, button_grid_x, button_grid_y, False, False)
+        draw_a_button(i, button_grid_x, button_grid_y,
+                      False, playing_stepper and step_i == i)
