@@ -127,10 +127,20 @@ def loop():
     playing = stepper.is_playing()
     step_states = [stepper.get_step_state(
         channel_i, step_i) for step_i in range(16)]
+    midi_notes = [step.note for step in step_states]
     note_names = [midi_note(
         step.note) if step.note is not None else None for step in step_states]
 
     draw_steps_buttons(fonts[1], step_i, playing, note_names)
+    # TODO: write draw_piano fucntion. should take 3 args:
+    # - when the stepper is playing,
+    # - the playing step index,
+    # - a list of the midi notes for the current channel
+
+    # draw_piano(playing, step_i, midi_notes)
+    # TODO: write draw_channel_switcher fucntion. it will show the menu to
+    # switch between channels
+
     # draw_channel_switcher()
 
     pygame.display.update()
