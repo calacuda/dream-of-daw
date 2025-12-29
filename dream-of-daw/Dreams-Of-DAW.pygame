@@ -170,7 +170,6 @@ def play_chord():
 
 
 def play_arp():
-    from time import sleep
     from threading import Thread
 
     for i in range(4):
@@ -188,12 +187,11 @@ def play_arp():
     stepper.start_playing()
 
     def stop_notes():
+        from time import sleep
+
         sleep(5)
-
         log.info("done with arp")
-
         sleep(1)
-
         quit_event = pygame.event.Event(pygame.QUIT)
         pygame.event.post(quit_event)
 
