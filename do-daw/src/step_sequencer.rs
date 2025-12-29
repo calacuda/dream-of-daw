@@ -132,7 +132,7 @@ impl StepSequencer {
             section.get(channel_i).map(|channel| {
                 channel.write().map(|mut channel| {
                     channel.steps.get_mut(step_i).map(|step| {
-                        info!("setting section {section_i}, channel {channel_i}, step {step_i}, to note {note:?}"); 
+                        debug!("setting section {section_i}, channel {channel_i}, step {step_i}, to note {note:?}"); 
                         step.note = note;
                         step.note
                     })
@@ -151,7 +151,8 @@ impl StepSequencer {
     }
 
     pub fn stop_playing(&mut self) {
-        self.playing.store(false, Ordering::Relaxed)
+        self.playing.store(false, Ordering::Relaxed);
+        info!("have stoped playing sequence");
     }
 
     pub fn get_step(&mut self) -> usize {
@@ -189,12 +190,7 @@ fn do_run_sequence(
             (60.0 / bpm) / bpq
         })
     };
-    debug!("pusle time = {}", {
-        let bpm = bpm.load(Ordering::Relaxed) as f64;
-        let bpq = bpq as f64;
-
-        (60.0 / bpm) / bpq
-    });
+    trace!("pusle time = {}", calc_wait_time().as_secs_f64());
     let should_play = || playing.load(Ordering::Relaxed);
     let mut note_offs: Vec<(u8, usize)> = Vec::with_capacity(N_CHANNELS * 4);
     let mut pulses = 0;
