@@ -29,6 +29,20 @@ fn run() -> (StepSequencer, Mixer) {
     (StepSequencer::new(mixer.clone(), dev), mixer)
 }
 
+#[pyfunction]
+fn midi_note(midi_note: usize) -> String {
+    let note_name_i = midi_note % 12;
+    let octave = midi_note / 12;
+    let octave: isize = octave as isize - 1;
+
+    let note_names = [
+        "C-", "C#", "D-", "D#", "E-", "F-", "F#", "G-", "G#", "A-", "A#", "B-",
+    ];
+    let note_name = note_names[note_name_i as usize];
+
+    format!("{note_name}{octave:X}")
+}
+
 /// A Python module implemented in Rust.
 #[pymodule]
 fn do_daw(m: &Bound<'_, PyModule>) -> PyResult<()> {
@@ -38,6 +52,7 @@ fn do_daw(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<StepState>()?;
 
     m.add_function(wrap_pyfunction!(run, m)?)?;
+    m.add_function(wrap_pyfunction!(midi_note, m)?)?;
 
     Ok(())
 }

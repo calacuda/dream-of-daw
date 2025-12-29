@@ -14,7 +14,7 @@ use tinyaudio::OutputDevice;
 
 const N_STEPS: usize = 16;
 
-#[pyclass]
+#[pyclass(get_all)]
 #[derive(Clone, Copy, Debug, PartialEq, PartialOrd)]
 pub struct StepState {
     note: Option<u8>,
@@ -126,13 +126,8 @@ impl StepSequencer {
 #[pymethods]
 impl StepSequencer {
     /// sets the note at step of channel in section
-    pub fn set_note(
-        &mut self,
-        section_i: usize,
-        channel_i: usize,
-        step_i: usize,
-        note: Option<u8>,
-    ) -> bool {
+    pub fn set_note(&mut self, channel_i: usize, step_i: usize, note: Option<u8>) -> bool {
+        let section_i = self.section_i.load(Ordering::Relaxed);
         let Some(Some(Ok(Some(new_note)))) = self.steps.get(section_i).map(|section| {
             section.get(channel_i).map(|channel| {
                 channel.write().map(|mut channel| {
@@ -165,6 +160,12 @@ impl StepSequencer {
 
     pub fn is_playing(&mut self) -> bool {
         self.playing.load(Ordering::Relaxed)
+    }
+
+    pub fn get_step_state(&mut self, channel_i: usize, step_i: usize) -> StepState {
+        let section_i = self.section_i.load(Ordering::Relaxed);
+
+        self.steps[section_i][channel_i].read().unwrap().steps[step_i]
     }
 }
 
