@@ -134,12 +134,6 @@ def loop():
 
     draw_steps_buttons(fonts[1], step_i, playing, note_names)
 
-    # TODO: write draw_piano fucntion. should take 3 args:
-    # - when the stepper is playing,
-    # - the playing step index,
-    # - a list of the midi notes for the current channel
-    # - cursor position
-
     cursor_position = 0
     draw_piano(playing, step_i, midi_notes, cursor_position)
 
