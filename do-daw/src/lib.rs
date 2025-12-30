@@ -54,5 +54,9 @@ fn do_daw(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(run, m)?)?;
     m.add_function(wrap_pyfunction!(midi_note, m)?)?;
 
+    m.add("N_CHANNELS", N_CHANNELS)?;
+    m.add("N_EFFECTS", N_EFFECTS)?;
+    m.add("N_SECTIONS", N_SECTIONS)?;
+
     Ok(())
 }

@@ -10,6 +10,7 @@ import platform
 from dream_of_daw.logger import get_logger
 from dream_of_daw.step_buttons import draw_steps_buttons
 from dream_of_daw.piano import draw_piano
+from dream_of_daw.channel_switch import draw_channel_switcher
 from dream_of_daw.controls import *
 from typing import Callable, Tuple
 
@@ -131,16 +132,13 @@ def loop():
     midi_notes = [step.note for step in step_states]
     note_names = [midi_note(
         step.note) if step.note is not None else None for step in step_states]
+    plugins = mixer.get_plugin_names()
 
     draw_steps_buttons(fonts[1], step_i, playing, note_names)
 
     cursor_position = 0
     draw_piano(playing, step_i, midi_notes, cursor_position)
-
-    # TODO: write draw_channel_switcher fucntion. it will show the menu to
-    # switch between channels
-
-    # draw_channel_switcher()
+    draw_channel_switcher(fonts[0], channel_i, cursor_position, plugins)
 
     pygame.display.update()
 
@@ -182,7 +180,7 @@ def play_chord():
 def play_arp():
     from threading import Thread
 
-    for i in range(4):
+    for i in range(2):
         mixer.set_instrument(i, "Wt Synth")
 
     log.info("start arpegio")

@@ -353,6 +353,15 @@ impl Mixer {
             effects.remove(effect);
         }
     }
+
+    pub fn get_plugin_names(&self) -> Vec<Option<String>> {
+        self.channels.iter().map(|channel| {
+            let Some(plugin) = &channel.read().unwrap().sound_gen else {
+                return None;
+            };
+            Some(plugin.info().name.clone())
+        }).collect()
+    }
 }
 
 // fn load_plugin(plugin_path: PathBuf) -> Option<SinglePlugin> {

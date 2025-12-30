@@ -60,6 +60,8 @@ OCTAVE_W = PIANO_W / 7
 PIANO_WHITE_W = OCTAVE_W / 7
 PIANO_BLACK_W = OCTAVE_W / 12
 
+CHANNEL_MID_X = (SIDE_BARS_W + STEP_BUTTON_BOUNDING_BOX.left) / 2
+
 
 def select_mod_pressed(controller):
     return controller.is_pressed(SELECT_MOD)
