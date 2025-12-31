@@ -1,5 +1,4 @@
 #!/usr/bin/python
-from dream_of_daw.config import SCREEN_HEIGHT, SCREEN_WIDTH
 from dataclasses import dataclass
 import os
 import pygame
@@ -12,7 +11,6 @@ from dream_of_daw.step_buttons import draw_steps_buttons
 from dream_of_daw.piano import draw_piano
 from dream_of_daw.channel_switch import draw_channel_switcher
 from dream_of_daw.controls import *
-from typing import Callable, Tuple
 
 if "aarch64" in platform.machine():
     os.environ['HOME'] = "/userdata/system/"

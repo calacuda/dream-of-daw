@@ -14,9 +14,7 @@ def draw_channel_button(i, font, color, text):
     pygame.draw.rect(screen, color, button,
                      BUTTON_BOARDER_W, border_radius=BOARDER_RADIUS)
 
-    if text is None:
-        text = "?"
-
+    text = text[:12] if text is not None else "?"
     text = font.render(text, True, TEXT)
     text_rect = text.get_rect(center=center)
     screen.blit(text, text_rect)
