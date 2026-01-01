@@ -1,11 +1,11 @@
 #!/usr/bin/python
-from dataclasses import dataclass
 import os
 import pygame
+import platform
+from dataclasses import dataclass
 from logging import DEBUG
 from dream_of_daw.config import *
 from do_daw import run, midi_note
-import platform
 from dream_of_daw.logger import get_logger
 from dream_of_daw.step_buttons import draw_steps_buttons
 from dream_of_daw.piano import draw_piano
