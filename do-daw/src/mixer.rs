@@ -362,24 +362,21 @@ impl Mixer {
             Some(plugin.info().name.clone())
         }).collect()
     }
-}
 
-// fn load_plugin(plugin_path: PathBuf) -> Option<SinglePlugin> {
-//     // Create scanner and scan for plugins
-//     let scanner = Scanner::new().ok()?;
-//     let plugins = scanner.scan().ok()?;
-//     let synth_info = plugins.iter().find(|p| p.path == plugin_path)?;
-//     let plugin = scanner.load(&synth_info);
-//
-//     if plugin.is_err() {
-//         warn!(
-//             "failed to find the plugihttps://doc.rust-lang.org/beta/core/iter/fn.chain.htmln @ path {}.",
-//             plugin_path.display()
-//         )
-//     }
-//
-//     plugin.ok()
-// }
+    pub fn set_volume(&mut self, channel_i: usize, volume: f32) {
+        if volume > 1.25 || volume < 0.0 {
+            return;
+        }
+
+        if let Some(Ok(mut channel)) = self
+            .channels
+            .get(channel_i)
+            .map(|lock_writer| lock_writer.write())
+        {
+            channel.volume = volume;
+        }
+    }
+}
 
 pub fn load_plugin(plugin_name: &str) -> Option<SinglePlugin> {
     // Create scanner and scan for plugins

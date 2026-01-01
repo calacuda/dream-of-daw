@@ -111,13 +111,11 @@ impl StepSequencer {
         (
             Self {
                 mixer,
-                // _device,
                 steps,
                 step_i,
                 section_i,
                 bpm,
                 playing,
-                // _jh,
             },
             AudioOutputWrapper { _device, _jh },
         )
@@ -334,7 +332,7 @@ mod test {
         // env_logger::builder().format_timestamp(None).init();
 
         let (mixer, dev) = Mixer::new();
-        let mut seq = StepSequencer::new(mixer, dev);
+        let (mut seq, _audio_wrapper) = StepSequencer::new(mixer, dev);
         let chan = 0;
 
         for chan in 0..N_CHANNELS {
