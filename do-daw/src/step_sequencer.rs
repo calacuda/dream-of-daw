@@ -144,6 +144,31 @@ impl StepSequencer {
         new_note == note
     }
 
+    /// sets the note at step of channel in section
+    pub fn edit_note(&mut self, channel_i: usize, step_i: usize, note: i8) {
+        let section_i = self.section_i.load(Ordering::Relaxed);
+
+        self.steps.get(section_i).map(|section| {
+            section.get(channel_i).map(|channel| {
+                channel.write().map(|mut channel| {
+                    channel.steps.get_mut(step_i).map(|step| {
+                        debug!("editing section {section_i}, channel {channel_i}, step {step_i}, by value {note:?}"); 
+                        step.note.as_mut().map(|num| if note.abs() as u8 <= *num && !(note < 0 && *num == 24) {
+                            *num = ((*num as i8) + note).abs() as u8 % 108;
+
+                            if *num < 24 {
+                                *num = 107;
+                            }
+
+                            debug!("note is now: {num}"); 
+                        });
+                        step.note
+                    })
+                })
+            })
+        });
+    }
+
     pub fn start_playing(&mut self) {
         self.playing.store(true, Ordering::Relaxed);
         info!("am now playing sequence");

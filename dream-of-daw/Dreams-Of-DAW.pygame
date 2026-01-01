@@ -122,11 +122,18 @@ def handle_pygame_events():
     return False
 
 
-def do_nav(button, method):
+def do_single_press(button, method):
     hold_time = controller.just_released(button)
 
-    if hold_time is not None and 10 < hold_time <= 175:
+    if hold_time is not None and 10 < hold_time <= 200:
         method()
+
+
+def do_hold_combo(hold_button, tap_button, method):
+    hold_time = controller.is_pressed(hold_button)
+
+    if hold_time is not None and 250 < hold_time:
+        do_single_press(tap_button, method)
 
 
 def handle_nav():
@@ -135,15 +142,39 @@ def handle_nav():
     mod_key_pressed = reduce(
         lambda acc, pressed: acc or pressed, mod_key_pressed)
 
-    # if controller.is_pressed(A):
-    #     for button, method in ((UP, cursor.up), (DOWN, cursor.down), (LEFT, cursor.left), (RIGHT, cursor.right),):
-    #         do_nav(button, method)
-
     if mod_key_pressed:
         return
 
     for button, method in ((UP, cursor.up), (DOWN, cursor.down), (LEFT, cursor.left), (RIGHT, cursor.right),):
-        do_nav(button, method)
+        do_single_press(button, method)
+
+
+def handle_start():
+    def func():
+        if stepper.is_playing():
+            stepper.stop_playing()
+        else:
+            stepper.start_playing()
+
+    if not controller.is_pressed(HOME):
+        do_single_press(START, func)
+
+
+def edit_step():
+    def mk_edit_f(note_amt):
+        def edit():
+            stepper.edit_note(CHANNEL_I, cursor.index, note_amt)
+
+        return edit
+
+    if cursor.sector == UiSector.Steps:
+        do_single_press(B, lambda: stepper.set_note(
+            CHANNEL_I, cursor.index, None if stepper.get_step_state(
+                CHANNEL_I, cursor.index).note is not None else 60))
+        do_hold_combo(B, LB, mk_edit_f(-1))
+        do_hold_combo(B, RB, mk_edit_f(+1))
+        do_hold_combo(B, LT, mk_edit_f(-12))
+        do_hold_combo(B, RT, mk_edit_f(+12))
 
 
 def setup():
@@ -169,6 +200,8 @@ def loop():
     draw_bottom_right_menu(fonts[1], fonts[2], playing, stepper.get_bpm())
 
     handle_nav()
+    handle_start()
+    edit_step()
 
     pygame.display.update()
 
@@ -235,17 +268,19 @@ def play_arp():
         quit_event = pygame.event.Event(pygame.QUIT)
         pygame.event.post(quit_event)
 
-    t = Thread(target=stop_notes, daemon=True)
-    t.start()
+    # t = Thread(target=stop_notes, daemon=True)
+    # t.start()
 
-    return t
+    # return t
 
 
 if __name__ == "__main__":
     from do_daw import UiSector
+
     # t = play_chord()
     # t = play_arp()
-    cursor.sector = UiSector.Sections
+    play_arp()
+    # cursor.sector = UiSector.Sections
 
     log.info("starting main loop.")
     clear_screen()

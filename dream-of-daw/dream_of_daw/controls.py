@@ -5,17 +5,17 @@ import pygame
 from .logger import log
 
 
-A = 1
-B = 0
-X = 3
-Y = 2
-START = 7
-SELECT = 6
+A = 0
+B = 1
+X = 2
+Y = 3
+START = 9
+SELECT = 8
 LB = 4
 RB = 5
-LT = 9
-RT = 10
-HOME = 8
+LT = 6
+RT = 7
+HOME = 10
 UP = (0, 1)
 DOWN = (0, -1)
 LEFT = (-1, 0)

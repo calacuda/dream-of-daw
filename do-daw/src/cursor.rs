@@ -34,13 +34,6 @@ impl Cursor {
         Self::default()
     }
 
-    // TODO: find a way to "step" this state machine by button presses
-
-    // pub fn enter_controls(&mut self) {
-    //     self.index = 0;
-    //     self.sector = UiSector::Controls;
-    // }
-
     pub fn up(&mut self) {
         match self.sector {
             UiSector::Steps => {
