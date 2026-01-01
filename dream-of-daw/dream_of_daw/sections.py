@@ -2,6 +2,7 @@ import pygame
 from .config import *
 import string
 from do_daw import N_SECTIONS
+from do_daw import UiSector
 
 
 center_x = SIDE_BARS_W / 2
@@ -24,13 +25,14 @@ def draw_section(font, display_name, i, color, text_color):
     screen.blit(text, text_rect)
 
 
-def draw_sections(font, section_i, cursor_position):
+def draw_sections(font, section_i):
     center_y = HINT_BAR_H * 0.5
     center = (center_x, center_y)
     text = "Section"
     text = font.render(text, True, TEXT)
     text_rect = text.get_rect(center=center)
     screen.blit(text, text_rect)
+    in_sector = cursor.sector == UiSector.Sections
 
     for (i, display_name) in enumerate(string.ascii_uppercase[:N_SECTIONS]):
         color = SURFACE_0
@@ -39,11 +41,12 @@ def draw_sections(font, section_i, cursor_position):
         if section_i == i:
             color = SURFACE_2
 
-        if cursor_position == i:
+        if in_sector and cursor.index == i:
             color = GREEN
             text_color = TEXT
 
         if section_i == i:
-            text_color = SAPHIRE
+            # text_color = SAPHIRE
+            text_color = GREEN
 
         draw_section(font, display_name, i, color, text_color)

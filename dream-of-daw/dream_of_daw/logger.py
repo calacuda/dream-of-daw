@@ -1,5 +1,4 @@
-from logging import getLogger, basicConfig, DEBUG, INFO, WARNING, ERROR, CRITICAL, Formatter, StreamHandler
-# from stepper_synth_backend import log_debug, log_info, log_warn, log_error
+from logging import getLogger, DEBUG, INFO, WARNING, ERROR, CRITICAL, Formatter, StreamHandler
 
 
 class CustomFormatter(Formatter):
@@ -47,3 +46,6 @@ def get_logger(name: str, log_level):
     logger.addHandler(ch)
 
     return logger
+
+
+log = get_logger("Dreams-Of-DAW", DEBUG)

@@ -2,24 +2,6 @@ from dataclasses import dataclass
 from copy import deepcopy
 
 
-# buttons = {
-#     "a": 1,
-#     "b": 0,
-#     "x": 3,
-#     "y": 2,
-#     "start": 7,
-#     "select": 6,
-#     "lb": 4,
-#     "rb": 5,
-#     "lt": 9,
-#     "rt": 10,
-#     "home": 8,
-#     "up": (0, 1),
-#     "down": (0, -1),
-#     "left": (-1, 0),
-#     "right": (1, 0)
-# }
-
 A = 1,
 B = 0,
 X = 3,
@@ -63,13 +45,11 @@ class ButtonData:
 
 class Buttons:
     def __init__(self) -> None:
-        # self.buttons = {}
         self.pressed_now = []
         self.last_pressed_now = []
 
     def press(self, button):
         if button not in self.pressed_now:
-            # print(f"pressed {button}, {self.pressed_now}")
             self.pressed_now.append(button)
         else:
             self.release(button)

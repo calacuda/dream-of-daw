@@ -1,5 +1,6 @@
 import pygame
 from .config import *
+from do_daw import UiSector
 
 
 def mk_white_key():
@@ -21,7 +22,7 @@ def note_is_natural(midi_note):
     return note in [0, 2, 4, 5, 7, 9, 11]
 
 
-def draw_piano(playing, step_i, midi_notes, cursor_position):
+def draw_piano(playing, step_i, midi_notes):
     """
     draw_piano fucntion. takes 3 args:
         - when the stepper is playing,
@@ -31,6 +32,7 @@ def draw_piano(playing, step_i, midi_notes, cursor_position):
     """
     white_keys = [mk_white_key() for _ in range(n_white_keys)]
     black_keys = [mk_black_key() for _ in range(5 * N_OCTAVES)]
+    cursor_position = cursor.index if cursor.sector == UiSector.Steps else None
 
     for (white_i, (i, midi_note)) in enumerate([i for i in enumerate(range(24, 108)) if note_is_natural(i[1])]):
         color = TEXT
@@ -39,7 +41,7 @@ def draw_piano(playing, step_i, midi_notes, cursor_position):
         key.left += offset + (white_i % 7) * key.width
         key.width *= 0.9
 
-        if (midi_note == midi_notes[step_i] and playing) or (midi_note == midi_notes[cursor_position] and not playing):
+        if (midi_note == midi_notes[step_i] and playing) or (cursor_position is not None and midi_note == midi_notes[cursor_position] and not playing):
             color = SURFACE_2
 
         pygame.draw.rect(
@@ -54,7 +56,7 @@ def draw_piano(playing, step_i, midi_notes, cursor_position):
         key = black_keys[black_i]
         key.left += PIANO_BLACK_W * (i % 12) + offset
 
-        if (midi_note == midi_notes[step_i] and playing) or (midi_note == midi_notes[cursor_position] and not playing):
+        if (midi_note == midi_notes[step_i] and playing) or (cursor_position is not None and midi_note == midi_notes[cursor_position] and not playing):
             color = SURFACE_2
 
         pygame.draw.rect(

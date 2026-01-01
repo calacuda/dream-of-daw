@@ -1,6 +1,7 @@
 import pygame
 from .config import *
 from do_daw import N_CHANNELS
+from do_daw import UiSector
 
 
 def draw_channel_button(i, font, color, text):
@@ -20,14 +21,16 @@ def draw_channel_button(i, font, color, text):
     screen.blit(text, text_rect)
 
 
-def draw_channel_switcher(font, channel_i, selected, plugins):
+def draw_channel_switcher(font, channel_i, plugins):
+    in_sector = cursor.sector == UiSector.ChannelSelect
+
     for i in range(N_CHANNELS):
-        color = SURFACE_2
+        color = SURFACE_0
 
         if channel_i == i:
-            color = SURFACE_0
+            color = SURFACE_2
 
-        if selected == i:
+        if in_sector and cursor.index == i:
             color = GREEN
 
         draw_channel_button(i, font, color, plugins[i])

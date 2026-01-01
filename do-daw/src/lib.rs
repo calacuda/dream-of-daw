@@ -1,15 +1,16 @@
 use crate::{
+    cursor::{Cursor, UiSector},
     mixer::Mixer,
     step_sequencer::{StepSequence, StepSequencer, StepState, audio_wrapper::AudioOutputWrapper},
 };
 use pyo3::prelude::*;
 use rack::vst3::Vst3Plugin;
 
-pub mod plugin_chain;
-pub mod traits;
-// pub mod do_daw_test;
+pub mod cursor;
 pub mod mixer;
+pub mod plugin_chain;
 pub mod step_sequencer;
+pub mod traits;
 
 pub const N_CHANNELS: usize = 4;
 pub const N_EFFECTS: usize = 3;
@@ -53,6 +54,8 @@ fn do_daw(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<StepSequencer>()?;
     m.add_class::<StepSequence>()?;
     m.add_class::<StepState>()?;
+    m.add_class::<UiSector>()?;
+    m.add_class::<Cursor>()?;
 
     m.add_function(wrap_pyfunction!(run, m)?)?;
     m.add_function(wrap_pyfunction!(midi_note, m)?)?;

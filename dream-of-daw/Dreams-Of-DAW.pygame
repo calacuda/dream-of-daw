@@ -2,11 +2,10 @@
 import os
 import pygame
 import platform
-from dataclasses import dataclass
-from logging import DEBUG
+# from dataclasses import dataclass
 from dream_of_daw.config import *
 from do_daw import run, midi_note
-from dream_of_daw.logger import get_logger
+from dream_of_daw.logger import log
 from dream_of_daw.step_buttons import draw_steps_buttons
 from dream_of_daw.piano import draw_piano
 from dream_of_daw.channel_switch import draw_channel_switcher
@@ -32,14 +31,11 @@ fonts = [
 ]
 clock = pygame.time.Clock()
 done = False
-log = get_logger("Dreams-Of-DAW", DEBUG)
 controller = Buttons()
 (stepper, mixer, _audio_wrapper) = run()
 
 for (name, path) in mixer.get_plugin_list():
     log.info(f"found plugin: {name}, at path {path}")
-
-channel_i = 0
 
 
 def clear_screen():
@@ -114,7 +110,7 @@ def loop():
     step_i = stepper.get_step()
     playing = stepper.is_playing()
     step_states = [stepper.get_step_state(
-        channel_i, step_i) for step_i in range(16)]
+        CHANNEL_I, step_i) for step_i in range(16)]
     midi_notes = [step.note for step in step_states]
     note_names = [midi_note(
         step.note) if step.note is not None else None for step in step_states]
@@ -122,11 +118,9 @@ def loop():
     section_i = stepper.get_section()
 
     draw_steps_buttons(fonts[1], step_i, playing, note_names)
-
-    cursor_position = 0
-    draw_piano(playing, step_i, midi_notes, cursor_position)
-    draw_channel_switcher(fonts[0], channel_i, cursor_position, plugins)
-    draw_sections(fonts[1], section_i, cursor_position)
+    draw_piano(playing, step_i, midi_notes)
+    draw_channel_switcher(fonts[0], CHANNEL_I, plugins)
+    draw_sections(fonts[1], section_i)
     draw_bottom_right_menu(fonts[1], fonts[2], playing, stepper.get_bpm())
 
     pygame.display.update()
@@ -173,9 +167,10 @@ def play_arp():
         mixer.set_instrument(i, "Wt Synth")
 
     notes = [60, 64, 67, 71]
-    set_note_record_quarter_speed = [stepper.set_note(1, i * 4, note)
-                                     for (i, note) in enumerate(notes)]
+    # set_note_record_quarter_speed = [stepper.set_note(1, i * 4, note)
+    #                                  for (i, note) in enumerate(notes)]
     set_note_record = [stepper.set_note(0, i, notes[i % len(notes)]) and
+                       stepper.set_note(1, i, notes[i % len(notes)] - 12 + 7) and
                        stepper.set_note(2, i, notes[i % len(notes)] - 12)
                        for i in range(16)]
 
@@ -183,8 +178,8 @@ def play_arp():
         from time import sleep
 
         sleep(1)
-        log.info(f"record of setting notes @ quater speed: {
-                 set_note_record_quarter_speed}")
+        # log.info(f"record of setting notes @ quater speed: {
+        #          set_note_record_quarter_speed}")
         log.info(f"set notes record: {set_note_record}")
         stepper.start_playing()
         log.info("start arpegio")

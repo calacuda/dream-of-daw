@@ -1,5 +1,7 @@
 import pygame
 from .config import *
+from .logger import log
+from do_daw import UiSector
 
 
 button_bounds_w = STEP_BUTTON_BOUNDING_BOX.width / 8
@@ -42,9 +44,12 @@ def draw_a_button(i, note_name, font, button_grid_x, button_grid_y, selected: bo
 
 
 def draw_steps_buttons(font, step_i, playing_stepper, notes):
+    steps_selected = cursor.sector == UiSector.Steps
+
     for (i, note_name) in enumerate(notes):
         button_grid_x = i % 8
         button_grid_y = i // 8
 
         draw_a_button(i, note_name, font, button_grid_x, button_grid_y,
-                      False, playing_stepper and step_i == i)
+                      steps_selected and cursor.index == i,
+                      playing_stepper and step_i == i)
