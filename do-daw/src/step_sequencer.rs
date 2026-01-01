@@ -168,6 +168,10 @@ impl StepSequencer {
 
         self.steps[section_i][channel_i].read().unwrap().steps[step_i]
     }
+
+    pub fn get_section(&mut self) -> usize {
+        self.section_i.load(Ordering::Relaxed).into()
+    }
 }
 
 fn do_run_sequence(

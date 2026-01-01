@@ -31,17 +31,13 @@ def draw_piano(playing, step_i, midi_notes, cursor_position):
     """
     white_keys = [mk_white_key() for _ in range(n_white_keys)]
     black_keys = [mk_black_key() for _ in range(5 * N_OCTAVES)]
-    white_i = 0
-    black_i = 0
 
-    for (i, midi_note) in [i for i in enumerate(range(24, 108)) if note_is_natural(i[1])]:
-        # if note_is_natural(midi_note):
+    for (white_i, (i, midi_note)) in enumerate([i for i in enumerate(range(24, 108)) if note_is_natural(i[1])]):
         color = TEXT
         offset = OCTAVE_W * (i // 12)
         key = white_keys[white_i]
         key.left += offset + (white_i % 7) * key.width
         key.width *= 0.9
-        white_i += 1
 
         if (midi_note == midi_notes[step_i] and playing) or (midi_note == midi_notes[cursor_position] and not playing):
             color = SURFACE_2
@@ -52,13 +48,11 @@ def draw_piano(playing, step_i, midi_notes, cursor_position):
             border_top_right_radius=0 if white_i != n_white_keys else BOARDER_RADIUS
         )
 
-    for (i, midi_note) in [i for i in enumerate(range(24, 108)) if not note_is_natural(i[1])]:
-        # if not note_is_natural(midi_note):
+    for (black_i, (i, midi_note)) in enumerate([i for i in enumerate(range(24, 108)) if not note_is_natural(i[1])]):
         color = CRUST
         offset = OCTAVE_W * (i // 12)
         key = black_keys[black_i]
         key.left = PIANO_BLACK_W * (i % 12) + offset + SIDE_BARS_W
-        black_i += 1
 
         if (midi_note == midi_notes[step_i] and playing) or (midi_note == midi_notes[cursor_position] and not playing):
             color = SURFACE_2

@@ -10,6 +10,7 @@ from dream_of_daw.logger import get_logger
 from dream_of_daw.step_buttons import draw_steps_buttons
 from dream_of_daw.piano import draw_piano
 from dream_of_daw.channel_switch import draw_channel_switcher
+from dream_of_daw.sections import draw_sections
 from dream_of_daw.controls import *
 
 if "aarch64" in platform.machine():
@@ -131,12 +132,14 @@ def loop():
     note_names = [midi_note(
         step.note) if step.note is not None else None for step in step_states]
     plugins = mixer.get_plugin_names()
+    section_i = stepper.get_section()
 
     draw_steps_buttons(fonts[1], step_i, playing, note_names)
 
     cursor_position = 0
     draw_piano(playing, step_i, midi_notes, cursor_position)
     draw_channel_switcher(fonts[0], channel_i, cursor_position, plugins)
+    draw_sections(fonts[1], section_i, cursor_position)
 
     pygame.display.update()
 
@@ -218,6 +221,7 @@ if __name__ == "__main__":
     while not handle_pygame_events():
         loop()
 
+    stepper.stop_playing()
     pygame.quit()
     log.info("DONE")
     log.info("GOODBYE")
