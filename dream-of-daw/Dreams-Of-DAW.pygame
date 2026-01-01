@@ -104,14 +104,6 @@ def handle_pygame_events():
     if controller.is_pressed(HOME) and controller.just_released(START):
         return True
 
-    # x_pressed = controller.just_released(X)
-    # b_pressed = controller.just_released(B)
-
-    # if x_pressed:
-    #     SYNTH_MENU = not SYNTH_MENU
-    # elif b_pressed and SYNTH_MENU:
-    #     SYNTH_MENU = False
-
     return False
 
 
