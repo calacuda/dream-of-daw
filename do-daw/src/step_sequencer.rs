@@ -155,22 +155,26 @@ impl StepSequencer {
         info!("have stoped playing sequence");
     }
 
-    pub fn get_step(&mut self) -> usize {
+    pub fn get_step(&self) -> usize {
         self.step_i.load(Ordering::Relaxed)
     }
 
-    pub fn is_playing(&mut self) -> bool {
+    pub fn is_playing(&self) -> bool {
         self.playing.load(Ordering::Relaxed)
     }
 
-    pub fn get_step_state(&mut self, channel_i: usize, step_i: usize) -> StepState {
+    pub fn get_step_state(&self, channel_i: usize, step_i: usize) -> StepState {
         let section_i = self.section_i.load(Ordering::Relaxed);
 
         self.steps[section_i][channel_i].read().unwrap().steps[step_i]
     }
 
-    pub fn get_section(&mut self) -> usize {
+    pub fn get_section(&self) -> usize {
         self.section_i.load(Ordering::Relaxed).into()
+    }
+
+    pub fn get_bpm(&self) -> usize {
+        self.bpm.load(Ordering::Relaxed).into()
     }
 }
 

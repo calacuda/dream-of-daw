@@ -11,6 +11,7 @@ from dream_of_daw.step_buttons import draw_steps_buttons
 from dream_of_daw.piano import draw_piano
 from dream_of_daw.channel_switch import draw_channel_switcher
 from dream_of_daw.sections import draw_sections
+from dream_of_daw.bottom_right import draw_bottom_right_menu
 from dream_of_daw.controls import *
 
 if "aarch64" in platform.machine():
@@ -126,6 +127,7 @@ def loop():
     draw_piano(playing, step_i, midi_notes, cursor_position)
     draw_channel_switcher(fonts[0], channel_i, cursor_position, plugins)
     draw_sections(fonts[1], section_i, cursor_position)
+    draw_bottom_right_menu(fonts[1], fonts[2], playing, stepper.get_bpm())
 
     pygame.display.update()
 
