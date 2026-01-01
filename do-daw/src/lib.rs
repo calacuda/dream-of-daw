@@ -1,6 +1,6 @@
 use crate::{
     mixer::Mixer,
-    step_sequencer::{StepSequence, StepSequencer, StepState},
+    step_sequencer::{StepSequence, StepSequencer, StepState, audio_wrapper::AudioOutputWrapper},
 };
 use pyo3::prelude::*;
 use rack::vst3::Vst3Plugin;
@@ -22,12 +22,13 @@ pub type Sample = f32;
 
 /// Builds the Mixer, Step-Sequencer and makes threads for them where applicable
 #[pyfunction]
-fn run() -> (StepSequencer, Mixer) {
+fn run() -> (StepSequencer, Mixer, AudioOutputWrapper) {
     env_logger::builder().format_timestamp(None).init();
     let (mixer, dev) = Mixer::new();
+    let (stepper, jh) = StepSequencer::new(mixer.clone(), dev);
 
     // TODO: return join handle seperately so step_sequencer can be sendable
-    (StepSequencer::new(mixer.clone(), dev), mixer)
+    (stepper, mixer, jh)
 }
 
 #[pyfunction]
@@ -48,6 +49,7 @@ fn midi_note(midi_note: usize) -> String {
 #[pymodule]
 fn do_daw(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Mixer>()?;
+    m.add_class::<AudioOutputWrapper>()?;
     m.add_class::<StepSequencer>()?;
     m.add_class::<StepSequence>()?;
     m.add_class::<StepState>()?;

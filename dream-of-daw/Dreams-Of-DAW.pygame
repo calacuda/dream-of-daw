@@ -34,7 +34,7 @@ clock = pygame.time.Clock()
 done = False
 log = get_logger("Dreams-Of-DAW", DEBUG)
 controller = Buttons()
-(stepper, mixer) = run()
+(stepper, mixer, _audio_wrapper) = run()
 
 for (name, path) in mixer.get_plugin_list():
     log.info(f"found plugin: {name}, at path {path}")
@@ -189,6 +189,8 @@ def play_arp():
 
         sleep(7)
         log.info("done with arp")
+        sleep(1)
+        stepper.stop_playing()
         sleep(1)
         quit_event = pygame.event.Event(pygame.QUIT)
         pygame.event.post(quit_event)

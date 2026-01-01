@@ -1,4 +1,6 @@
-use crate::{N_CHANNELS, N_SECTIONS, mixer::Mixer};
+use crate::{
+    N_CHANNELS, N_SECTIONS, mixer::Mixer, step_sequencer::audio_wrapper::AudioOutputWrapper,
+};
 use log::*;
 use pyo3::prelude::*;
 use rack::prelude::*;
@@ -7,12 +9,14 @@ use std::{
         Arc, RwLock,
         atomic::{AtomicBool, AtomicUsize, Ordering},
     },
-    thread::{JoinHandle, sleep, spawn},
+    thread::{sleep, spawn},
     time::Duration,
 };
 use tinyaudio::OutputDevice;
 
 const N_STEPS: usize = 16;
+
+pub mod audio_wrapper;
 
 #[pyclass(get_all)]
 #[derive(Clone, Copy, Debug, PartialEq, PartialOrd)]
@@ -64,22 +68,18 @@ impl StepSequence {
     }
 }
 
-#[pyclass(unsendable)]
+#[pyclass]
 pub struct StepSequencer {
-    // pub mixer: PyCell<Mixer>,
-    // #[pyo3(get)]
     pub mixer: Mixer,
-    _device: OutputDevice,
     pub steps: Arc<[Arc<[RwLock<StepSequence>]>]>,
     pub step_i: Arc<AtomicUsize>,
     pub section_i: Arc<AtomicUsize>,
     pub bpm: Arc<AtomicUsize>,
     pub playing: Arc<AtomicBool>,
-    _jh: JoinHandle<()>,
 }
 
 impl StepSequencer {
-    pub fn new(mixer: Mixer, _device: OutputDevice) -> Self {
+    pub fn new(mixer: Mixer, _device: OutputDevice) -> (Self, AudioOutputWrapper) {
         let step_i: Arc<AtomicUsize> = Arc::new((N_STEPS - 1).into());
         let section_i: Arc<AtomicUsize> = Arc::new(0.into());
         let playing: Arc<AtomicBool> = Arc::new(false.into());
@@ -108,16 +108,19 @@ impl StepSequencer {
             }
         });
 
-        Self {
-            mixer,
-            _device,
-            steps,
-            step_i,
-            section_i,
-            bpm,
-            playing,
-            _jh,
-        }
+        (
+            Self {
+                mixer,
+                // _device,
+                steps,
+                step_i,
+                section_i,
+                bpm,
+                playing,
+                // _jh,
+            },
+            AudioOutputWrapper { _device, _jh },
+        )
     }
 }
 
