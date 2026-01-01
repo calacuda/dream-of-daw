@@ -78,10 +78,8 @@ pub struct StepSequencer {
     _jh: JoinHandle<()>,
 }
 
-// #[pymethods]
 impl StepSequencer {
     pub fn new(mixer: Mixer, _device: OutputDevice) -> Self {
-        // let (mixer, _device) = Mixer::new();
         let step_i: Arc<AtomicUsize> = Arc::new((N_STEPS - 1).into());
         let section_i: Arc<AtomicUsize> = Arc::new(0.into());
         let playing: Arc<AtomicBool> = Arc::new(false.into());

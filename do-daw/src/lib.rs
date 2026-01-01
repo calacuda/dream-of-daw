@@ -26,6 +26,7 @@ fn run() -> (StepSequencer, Mixer) {
     env_logger::builder().format_timestamp(None).init();
     let (mixer, dev) = Mixer::new();
 
+    // TODO: return join handle seperately so step_sequencer can be sendable
     (StepSequencer::new(mixer.clone(), dev), mixer)
 }
 
