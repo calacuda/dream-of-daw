@@ -150,14 +150,24 @@ def handle_nav():
 
 
 def handle_start():
-    def func():
+    def toggle_playback():
         if stepper.is_playing():
             stepper.stop_playing()
         else:
             stepper.start_playing()
 
     if not controller.is_pressed(HOME):
-        do_single_press(START, func)
+        do_single_press(START, toggle_playback)
+
+    if cursor.sector == UiSector.BottomRight:
+        fs = [
+            lambda: None,
+            # TODO: write settings mode
+            lambda: None,
+            toggle_playback,
+            lambda: stepper.stop_playing(),
+        ]
+        do_single_press(A, fs[cursor.index])
 
 
 def edit_step():
