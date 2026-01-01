@@ -181,7 +181,12 @@ def exit_steps():
     def set_sector_to(sector):
         def do_sector_to():
             cursor.sector = sector
-            cursor.index = 0
+
+            if sector == UiSector.ChannelSelect:
+                cursor.index = CHANNEL_I
+            else:
+                cursor.index = 0
+
             log.info(f"set sector to {cursor.sector}")
 
         return do_sector_to
@@ -300,8 +305,10 @@ if __name__ == "__main__":
 
     # t = play_chord()
     # t = play_arp()
-    play_arp()
+    # play_arp()
     # cursor.sector = UiSector.Sections
+    for i in range(4):
+        mixer.set_instrument(i, "Wt Synth")
 
     log.info("starting main loop.")
     clear_screen()
