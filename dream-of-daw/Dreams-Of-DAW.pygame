@@ -163,14 +163,14 @@ def handle_start():
 def edit_step():
     def mk_edit_f(note_amt):
         def edit():
-            stepper.edit_note(CHANNEL_I, cursor.index, note_amt)
+            stepper.edit_note(channel_i, cursor.index, note_amt)
 
         return edit
 
     if cursor.sector == UiSector.Steps:
         do_single_press(B, lambda: stepper.set_note(
-            CHANNEL_I, cursor.index, None if stepper.get_step_state(
-                CHANNEL_I, cursor.index).note is not None else 60))
+            channel_i, cursor.index, None if stepper.get_step_state(
+                channel_i, cursor.index).note is not None else 60))
         do_hold_combo(B, LB, mk_edit_f(-1))
         do_hold_combo(B, RB, mk_edit_f(+1))
         do_hold_combo(B, LT, mk_edit_f(-12))
@@ -183,7 +183,7 @@ def exit_steps():
             cursor.sector = sector
 
             if sector == UiSector.ChannelSelect:
-                cursor.index = CHANNEL_I
+                cursor.index = channel_i
             else:
                 cursor.index = 0
 
@@ -201,17 +201,17 @@ def setup():
 
 
 def loop():
-    global CHANNEL_I
+    global channel_i
 
     clear_screen()
 
     if cursor.sector == UiSector.ChannelSelect:
-        CHANNEL_I = cursor.index
+        channel_i = cursor.index
 
     step_i = stepper.get_step()
     playing = stepper.is_playing()
     step_states = [stepper.get_step_state(
-        CHANNEL_I, step_i) for step_i in range(16)]
+        channel_i, step_i) for step_i in range(16)]
     midi_notes = [step.note for step in step_states]
     note_names = [midi_note(
         step.note) if step.note is not None else None for step in step_states]
@@ -220,7 +220,7 @@ def loop():
 
     draw_steps_buttons(fonts[1], step_i, playing, note_names)
     draw_piano(playing, step_i, midi_notes)
-    draw_channel_switcher(fonts[0], CHANNEL_I, plugins)
+    draw_channel_switcher(fonts[0], channel_i, plugins)
     draw_sections(fonts[1], section_i)
     draw_bottom_right_menu(fonts[1], fonts[2], playing, stepper.get_bpm())
 

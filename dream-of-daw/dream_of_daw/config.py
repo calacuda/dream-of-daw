@@ -10,7 +10,7 @@ SCREEN_CENTER = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
 screen = pygame.display.set_mode(SCREEN_SIZE)
 BOARDER = 20
 LINE_WIDTH = 4
-CHANNEL_I = 0
+channel_i = 0
 cursor = Cursor()
 
 POINT_DIAMETER = SCREEN_HEIGHT / 75
