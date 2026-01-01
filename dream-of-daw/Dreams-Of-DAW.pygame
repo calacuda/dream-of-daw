@@ -172,9 +172,7 @@ def play_arp():
     for i in range(3):
         mixer.set_instrument(i, "Wt Synth")
 
-    log.info("start arpegio")
     notes = [60, 64, 67, 71]
-
     set_note_record_quarter_speed = [stepper.set_note(1, i * 4, note)
                                      for (i, note) in enumerate(notes)]
     set_note_record = [stepper.set_note(0, i, notes[i % len(notes)]) and
@@ -189,12 +187,13 @@ def play_arp():
                  set_note_record_quarter_speed}")
         log.info(f"set notes record: {set_note_record}")
         stepper.start_playing()
-
+        log.info("start arpegio")
         sleep(7)
         log.info("done with arp")
         sleep(1)
         stepper.stop_playing()
         sleep(1)
+
         quit_event = pygame.event.Event(pygame.QUIT)
         pygame.event.post(quit_event)
 
