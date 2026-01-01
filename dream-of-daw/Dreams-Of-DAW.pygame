@@ -177,12 +177,32 @@ def edit_step():
         do_hold_combo(B, RT, mk_edit_f(+12))
 
 
+def exit_steps():
+    def set_sector_to(sector):
+        def do_sector_to():
+            cursor.sector = sector
+            cursor.index = 0
+            log.info(f"set sector to {cursor.sector}")
+
+        return do_sector_to
+
+    if cursor.sector == UiSector.Steps:
+        do_hold_combo(A, LEFT, set_sector_to(UiSector.ChannelSelect))
+        do_hold_combo(A, RIGHT, set_sector_to(UiSector.BottomRight))
+
+
 def setup():
     pass
 
 
 def loop():
+    global CHANNEL_I
+
     clear_screen()
+
+    if cursor.sector == UiSector.ChannelSelect:
+        CHANNEL_I = cursor.index
+
     step_i = stepper.get_step()
     playing = stepper.is_playing()
     step_states = [stepper.get_step_state(
@@ -202,6 +222,7 @@ def loop():
     handle_nav()
     handle_start()
     edit_step()
+    exit_steps()
 
     pygame.display.update()
 

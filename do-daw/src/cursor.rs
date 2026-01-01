@@ -23,7 +23,7 @@ pub enum UiSector {
 pub struct Cursor {
     #[pyo3(get, set)]
     pub sector: UiSector,
-    #[pyo3(get)]
+    #[pyo3(get, set)]
     pub index: isize,
 }
 
