@@ -172,7 +172,7 @@ def play_chord():
         quit_event = pygame.event.Event(pygame.QUIT)
         pygame.event.post(quit_event)
 
-    t = Thread(target=stop_notes)
+    t = Thread(target=stop_notes, daemon=True)
     t.start()
 
     return t
