@@ -134,10 +134,6 @@ def draw_stop_button(playing, selected):
 def draw_bottom_right_menu(font, font_2, playing, bpm):
     in_sector = cursor.sector == UiSector.BottomRight
 
-    # if in_sector:
-    #     log.debug(f"cursor.index = {cursor.index}")
-
-    # draw_scale(font, in_sector and cursor.index == 0)
     draw_bpm(font, font_2, bpm, in_sector and cursor.index == 0)
     draw_settings_button(font, in_sector and cursor.index == 1)
     draw_play_button(playing, in_sector and cursor.index == 2)

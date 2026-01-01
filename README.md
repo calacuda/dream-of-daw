@@ -11,5 +11,7 @@ it allows for:
 
 ## TODO
 
-- design an sqlite schema for storing and recalling plugin information.
-- make a UI toolkit for pygame for my specific use case.
+- [ ] design an sqlite schema for storing and recalling plugin information.
+- [ ] a way to set macros based on plugin (recall from sqlite)
+- [ ] top view (macros, pitch, & mod-wheel)
+- [ ] hint menu-bar.
