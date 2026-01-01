@@ -200,6 +200,10 @@ impl StepSequencer {
     pub fn get_bpm(&self) -> usize {
         self.bpm.load(Ordering::Relaxed).into()
     }
+
+    pub fn set_bpm(&mut self, bpm: usize) {
+        self.bpm.store(bpm, Ordering::Relaxed);
+    }
 }
 
 fn do_run_sequence(

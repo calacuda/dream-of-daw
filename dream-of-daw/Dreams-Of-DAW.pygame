@@ -170,6 +170,29 @@ def handle_start():
         do_single_press(A, fs[cursor.index])
 
 
+def edit_bpm():
+    def mk_edit_f(adjust_amt):
+        def edit():
+            # stepper.edit_note(channel_i, cursor.index, note_amt)
+            raw_bpm = stepper.get_bpm()
+            new_bpm = raw_bpm + adjust_amt
+
+            if new_bpm < 0:
+                new_bpm = 0
+            elif new_bpm > 256:
+                new_bpm = 256
+
+            stepper.set_bpm(new_bpm)
+
+        return edit
+
+    if cursor.sector == UiSector.BottomRight:
+        do_hold_combo(B, LB, mk_edit_f(-1))
+        do_hold_combo(B, RB, mk_edit_f(+1))
+        do_hold_combo(B, LT, mk_edit_f(-10))
+        do_hold_combo(B, RT, mk_edit_f(+10))
+
+
 def edit_step():
     def mk_edit_f(note_amt):
         def edit():
@@ -238,6 +261,7 @@ def loop():
     handle_start()
     edit_step()
     exit_steps()
+    edit_bpm()
 
     pygame.display.update()
 
