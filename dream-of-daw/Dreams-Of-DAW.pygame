@@ -125,14 +125,14 @@ def handle_pygame_events():
 def do_single_press(button, method):
     hold_time = controller.just_released(button)
 
-    if hold_time is not None and 10 < hold_time <= 200:
+    if hold_time is not None and 10 < hold_time <= 225:
         method()
 
 
 def do_hold_combo(hold_button, tap_button, method):
     hold_time = controller.is_pressed(hold_button)
 
-    if hold_time is not None and 250 < hold_time:
+    if hold_time is not None and 275 < hold_time:
         do_single_press(tap_button, method)
 
 
@@ -193,9 +193,7 @@ def exit_steps():
 
     if cursor.sector == UiSector.Steps:
         do_hold_combo(A, LEFT, set_sector_to(UiSector.ChannelSelect))
-        # TODO: re-enable bellow after highlighting works properly
-
-        # do_hold_combo(A, RIGHT, set_sector_to(UiSector.BottomRight))
+        do_hold_combo(A, RIGHT, set_sector_to(UiSector.BottomRight))
 
 
 def setup():

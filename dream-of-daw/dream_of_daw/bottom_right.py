@@ -1,6 +1,8 @@
 import pygame
 from .config import *
+from .logger import log
 from math import cos, sin, radians, sqrt
+from do_daw import UiSector
 
 
 top = STEP_BUTTON_BOUNDING_BOX.top
@@ -22,7 +24,7 @@ p_b_center = (left + (center_x - left) * (ratio / 2 * 1.125),
               (play_top + SCREEN_HEIGHT) * 0.5)
 
 
-def draw_bpm(font, font_2, bpm):
+def draw_bpm(font, font_2, bpm, selected):
     text = "BPM:"
     text = font.render(text, True, TEXT)
     text_rect = text.get_rect(centerx=center_x, top=top)
@@ -34,7 +36,7 @@ def draw_bpm(font, font_2, bpm):
     button = pygame.Rect(center[0], center[1], (SCREEN_WIDTH - left) * 0.8,
                          text_rect.h * multiplier)
     button.center = center
-    pygame.draw.rect(screen, SURFACE_2, button,
+    pygame.draw.rect(screen, SURFACE_2 if not selected else GREEN, button,
                      BUTTON_BOARDER_W, border_radius=BOARDER_RADIUS)
 
     text = str(bpm)
@@ -43,14 +45,14 @@ def draw_bpm(font, font_2, bpm):
     screen.blit(text, text_rect)
 
 
-def draw_settings_button(font):
+def draw_settings_button(font, selected):
     center_y = (bottom_half_top + SCREEN_HEIGHT) * 0.5
     center = (center_x, (center_y + bottom_half_top) * 0.5)
 
     button = pygame.Rect(center[0], center[1], (SCREEN_WIDTH - left) * 0.8,
                          (SCREEN_HEIGHT - bottom_half_top) * 0.5 * 0.8)
     button.center = center
-    pygame.draw.rect(screen, SURFACE_2, button,
+    pygame.draw.rect(screen, SURFACE_2 if not selected else GREEN, button,
                      BUTTON_BOARDER_W, border_radius=BOARDER_RADIUS)
 
     text = "Setting"
@@ -130,7 +132,13 @@ def draw_stop_button(playing, selected):
 
 
 def draw_bottom_right_menu(font, font_2, playing, bpm):
-    draw_bpm(font, font_2, bpm)
-    draw_settings_button(font)
-    draw_play_button(playing, False)
-    draw_stop_button(playing, False)
+    in_sector = cursor.sector == UiSector.BottomRight
+
+    # if in_sector:
+    #     log.debug(f"cursor.index = {cursor.index}")
+
+    # draw_scale(font, in_sector and cursor.index == 0)
+    draw_bpm(font, font_2, bpm, in_sector and cursor.index == 0)
+    draw_settings_button(font, in_sector and cursor.index == 1)
+    draw_play_button(playing, in_sector and cursor.index == 2)
+    draw_stop_button(playing, in_sector and cursor.index == 3)

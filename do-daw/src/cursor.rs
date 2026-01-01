@@ -53,10 +53,14 @@ impl Cursor {
                 }
             }
             UiSector::BottomRight => {
-                if self.index < 3 {
-                    self.index = (self.index - 1) % 5
+                if self.index > 0 {
+                    if self.index < 2 {
+                        self.index = self.index - 1
+                    } else {
+                        self.index = 1;
+                    }
                 } else {
-                    self.index = 2;
+                    self.index = 3
                 }
             }
         }
@@ -83,7 +87,7 @@ impl Cursor {
                 }
             }
             UiSector::BottomRight => {
-                if self.index < 3 {
+                if self.index < 2 {
                     self.index = (self.index + 1) % 5
                 } else {
                     self.index = 0;
@@ -123,8 +127,14 @@ impl Cursor {
                 }
             }
             UiSector::BottomRight => {
-                if self.index == 4 {
+                if self.index == 3 {
                     self.index -= 1;
+                } else if self.index < 1 {
+                    self.sector = UiSector::Steps;
+                    self.index = (N_STEPS / 2) as isize - 1;
+                } else if self.index >= 1 {
+                    self.sector = UiSector::Steps;
+                    self.index = N_STEPS as isize - 1;
                 }
             }
         }
@@ -160,7 +170,7 @@ impl Cursor {
                 }
             }
             UiSector::BottomRight => {
-                if self.index == 4 {
+                if self.index == 2 {
                     self.index += 1;
                 }
             }
