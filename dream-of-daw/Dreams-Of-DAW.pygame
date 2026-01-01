@@ -187,7 +187,7 @@ def play_arp():
     def stop_notes():
         from time import sleep
 
-        sleep(5)
+        sleep(7)
         log.info("done with arp")
         sleep(1)
         quit_event = pygame.event.Event(pygame.QUIT)

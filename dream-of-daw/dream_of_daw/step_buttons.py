@@ -20,7 +20,7 @@ def draw_a_button(i, note_name, font, button_grid_x, button_grid_y, selected: bo
         outline_color = SURFACE_2
 
     if playing:
-        led_color = RED
+        led_color = PEACH
     else:
         led_color = SURFACE_2
 
