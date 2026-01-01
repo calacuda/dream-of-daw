@@ -18,7 +18,6 @@ distance = (center_x - left) * 0.125
 p_b_center = (center_x + left) * 0.5
 # p_b_center = (left + (center_x - left) * 0.485,
 ratio = sqrt(distance**2 - (distance / 2)**2) / distance
-print(f"ratio = {ratio}")
 p_b_center = (left + (center_x - left) * (ratio / 2 * 1.125),
               (play_top + SCREEN_HEIGHT) * 0.5)
 

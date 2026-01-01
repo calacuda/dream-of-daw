@@ -1,6 +1,5 @@
-use pyo3::prelude::*;
-
 use crate::{N_CHANNELS, N_SECTIONS, step_sequencer::N_STEPS};
+use pyo3::prelude::*;
 
 #[pyclass(eq, eq_int)]
 #[derive(Default, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -22,7 +21,7 @@ pub enum UiSector {
 #[pyclass]
 #[derive(Default, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
 pub struct Cursor {
-    #[pyo3(get)]
+    #[pyo3(get, set)]
     pub sector: UiSector,
     #[pyo3(get)]
     pub index: isize,
@@ -37,18 +36,18 @@ impl Cursor {
 
     // TODO: find a way to "step" this state machine by button presses
 
-    pub fn enter_controls(&mut self) {
-        self.index = 0;
-        self.sector = UiSector::Controls;
-    }
+    // pub fn enter_controls(&mut self) {
+    //     self.index = 0;
+    //     self.sector = UiSector::Controls;
+    // }
 
     pub fn up(&mut self) {
         match self.sector {
             UiSector::Steps => {
                 if self.index < (N_STEPS / 2) as isize {
-                    self.index -= (N_STEPS / 2) as isize;
-                } else {
                     self.index += (N_STEPS / 2) as isize;
+                } else {
+                    self.index -= (N_STEPS / 2) as isize;
                 }
             }
             UiSector::Sections => self.index = (self.index - 1) % (N_SECTIONS as isize),
@@ -78,6 +77,8 @@ impl Cursor {
                 } else {
                     self.index -= (N_STEPS / 2) as isize;
                 }
+
+                self.index %= N_STEPS as isize;
             }
             UiSector::Sections => self.index = (self.index + 1) % (N_SECTIONS as isize),
             UiSector::ChannelSelect => self.index = (self.index + 1) % (N_CHANNELS as isize),
@@ -102,7 +103,11 @@ impl Cursor {
         match self.sector {
             UiSector::Steps => {
                 let jump_line = self.index >= (N_STEPS / 2) as isize;
-                self.index -= 1;
+                self.index -= if self.index == 0 {
+                    ((N_STEPS / 2) as isize - 1) * -1
+                } else {
+                    1
+                };
                 self.index %= (N_STEPS / 2) as isize;
 
                 if jump_line {

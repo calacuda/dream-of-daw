@@ -12,6 +12,7 @@ from dream_of_daw.channel_switch import draw_channel_switcher
 from dream_of_daw.sections import draw_sections
 from dream_of_daw.bottom_right import draw_bottom_right_menu
 from dream_of_daw.controls import *
+from functools import reduce
 
 if "aarch64" in platform.machine():
     os.environ['HOME'] = "/userdata/system/"
@@ -48,20 +49,38 @@ def check_controller_input(events):
     for event in events:
         # TODO: make this a match statement
         if event.type == pygame.JOYHATMOTION:
-            controller.purge_dpad()
+            # controller.purge_dpad()
+            match event.value:
+                case (0, 0):
+                    controller.purge_dpad()
+                case (_, 0):
+                    controller.release((0, 1))
+                    controller.release((0, -1))
+                case (0, _):
+                    controller.release((1, 0))
+                    controller.release((-1, 0))
 
             match event.value:
                 case (_, 1):
                     controller.press((0, 1))
+                    # cursor.up()
+                    # log.debug("up")
                 case (_, -1):
                     controller.press((0, -1))
+                    # cursor.down()
+                    # log.debug("down")
 
             match event.value:
-                case (1, _):
-                    controller.press((1, 0))
                 case (-1, _):
                     controller.press((-1, 0))
+                    # cursor.left()
+                    # log.debug("left")
+                case (1, _):
+                    controller.press((1, 0))
+                    # cursor.right()
+                    # log.debug("right")
 
+            # log.debug(f"got event {event}")
         elif event.type == pygame.JOYBUTTONUP:
             controller.release(event.button)
         elif event.type == pygame.JOYBUTTONDOWN:
@@ -79,7 +98,6 @@ def check_controller_input(events):
 def handle_pygame_events():
     global joy
     global controller_found
-    # global SYNTH_MENU
 
     ctrlr_events = []
 
@@ -88,17 +106,44 @@ def handle_pygame_events():
             return True
         elif event.type == pygame.JOYDEVICEADDED:
             joy = pygame.joystick.Joystick(event.device_index)
+            joy.init()
             controller_found = True
+            # log.debug("found controller!")
         elif event.type == pygame.JOYHATMOTION or event.type == pygame.JOYBUTTONUP or event.type == pygame.JOYBUTTONDOWN or event.type == pygame.JOYAXISMOTION:
             ctrlr_events.append(event)
 
-    if controller_found and ctrlr_events:
+    controller.step()
+    if ctrlr_events:
         check_controller_input(ctrlr_events)
 
     if controller.is_pressed(HOME) and controller.just_released(START):
         return True
 
     return False
+
+
+def do_nav(button, method):
+    hold_time = controller.just_released(button)
+
+    if hold_time is not None and 10 < hold_time <= 175:
+        method()
+
+
+def handle_nav():
+    mod_key_pressed = [controller.is_pressed(
+        button) is not None for button in [A, B, X, Y, HOME, START, SELECT]]
+    mod_key_pressed = reduce(
+        lambda acc, pressed: acc or pressed, mod_key_pressed)
+
+    # if controller.is_pressed(A):
+    #     for button, method in ((UP, cursor.up), (DOWN, cursor.down), (LEFT, cursor.left), (RIGHT, cursor.right),):
+    #         do_nav(button, method)
+
+    if mod_key_pressed:
+        return
+
+    for button, method in ((UP, cursor.up), (DOWN, cursor.down), (LEFT, cursor.left), (RIGHT, cursor.right),):
+        do_nav(button, method)
 
 
 def setup():
@@ -122,6 +167,8 @@ def loop():
     draw_channel_switcher(fonts[0], CHANNEL_I, plugins)
     draw_sections(fonts[1], section_i)
     draw_bottom_right_menu(fonts[1], fonts[2], playing, stepper.get_bpm())
+
+    handle_nav()
 
     pygame.display.update()
 
@@ -167,8 +214,6 @@ def play_arp():
         mixer.set_instrument(i, "Wt Synth")
 
     notes = [60, 64, 67, 71]
-    # set_note_record_quarter_speed = [stepper.set_note(1, i * 4, note)
-    #                                  for (i, note) in enumerate(notes)]
     set_note_record = [stepper.set_note(0, i, notes[i % len(notes)]) and
                        stepper.set_note(1, i, notes[i % len(notes)] - 12 + 7) and
                        stepper.set_note(2, i, notes[i % len(notes)] - 12)
@@ -178,8 +223,6 @@ def play_arp():
         from time import sleep
 
         sleep(1)
-        # log.info(f"record of setting notes @ quater speed: {
-        #          set_note_record_quarter_speed}")
         log.info(f"set notes record: {set_note_record}")
         stepper.start_playing()
         log.info("start arpegio")
@@ -199,8 +242,10 @@ def play_arp():
 
 
 if __name__ == "__main__":
+    from do_daw import UiSector
     # t = play_chord()
-    t = play_arp()
+    # t = play_arp()
+    cursor.sector = UiSector.Sections
 
     log.info("starting main loop.")
     clear_screen()

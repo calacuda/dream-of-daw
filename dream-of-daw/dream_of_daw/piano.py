@@ -1,5 +1,6 @@
 import pygame
 from .config import *
+from .logger import *
 from do_daw import UiSector
 
 
@@ -33,6 +34,7 @@ def draw_piano(playing, step_i, midi_notes):
     white_keys = [mk_white_key() for _ in range(n_white_keys)]
     black_keys = [mk_black_key() for _ in range(5 * N_OCTAVES)]
     cursor_position = cursor.index if cursor.sector == UiSector.Steps else None
+    # log.warn(f"cursor_position: {cursor_position}")
 
     for (white_i, (i, midi_note)) in enumerate([i for i in enumerate(range(24, 108)) if note_is_natural(i[1])]):
         color = TEXT
