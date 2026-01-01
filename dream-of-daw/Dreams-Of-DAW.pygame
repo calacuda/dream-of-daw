@@ -117,9 +117,6 @@ def handle_pygame_events():
 
 def setup():
     pass
-    # box_rect = pygame.Rect(0, 0,
-    #                        SCREEN_WIDTH, SCREEN_HEIGHT * 0.1)
-    # pygame.draw.rect(screen, RED, box_rect)
 
 
 def loop():
