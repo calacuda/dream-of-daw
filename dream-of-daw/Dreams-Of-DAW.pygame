@@ -175,17 +175,20 @@ def play_arp():
     log.info("start arpegio")
     notes = [60, 64, 67, 71]
 
-    set_note_record = [stepper.set_note(1, i * 4, note)
-                       for (i, note) in enumerate(notes)]
-    set_note_record = [stepper.set_note(0, i, notes[i % len(notes)])
+    set_note_record_quarter_speed = [stepper.set_note(1, i * 4, note)
+                                     for (i, note) in enumerate(notes)]
+    set_note_record = [stepper.set_note(0, i, notes[i % len(notes)]) and
+                       stepper.set_note(2, i, notes[i % len(notes)] - 12)
                        for i in range(16)]
-    set_note_record = [stepper.set_note(2, i, notes[i % len(notes)] - 12)
-                       for i in range(16)]
-    log.info(f"record of setting notes {set_note_record}")
-    stepper.start_playing()
 
     def stop_notes():
         from time import sleep
+
+        sleep(1)
+        log.info(f"record of setting notes @ quater speed: {
+                 set_note_record_quarter_speed}")
+        log.info(f"set notes record: {set_note_record}")
+        stepper.start_playing()
 
         sleep(7)
         log.info("done with arp")
