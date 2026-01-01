@@ -38,7 +38,6 @@ def draw_sections(font, section_i, cursor_position):
 
         if section_i == i:
             color = SURFACE_2
-            # text_color = SAPHIRE
 
         if cursor_position == i:
             color = GREEN
