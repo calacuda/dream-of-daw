@@ -193,7 +193,9 @@ def exit_steps():
 
     if cursor.sector == UiSector.Steps:
         do_hold_combo(A, LEFT, set_sector_to(UiSector.ChannelSelect))
-        do_hold_combo(A, RIGHT, set_sector_to(UiSector.BottomRight))
+        # TODO: re-enable bellow after highlighting works properly
+
+        # do_hold_combo(A, RIGHT, set_sector_to(UiSector.BottomRight))
 
 
 def setup():
