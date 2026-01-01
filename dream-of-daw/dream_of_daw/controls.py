@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 from copy import deepcopy
+from typing import Optional
+import pygame
 
 
 A = 1,
@@ -45,31 +47,37 @@ class ButtonData:
 
 class Buttons:
     def __init__(self) -> None:
-        self.pressed_now = []
-        self.last_pressed_now = []
+        self.pressed_now = {}
+        self.last_pressed_now = {}
 
     def press(self, button):
         if button not in self.pressed_now:
-            self.pressed_now.append(button)
+            self.pressed_now[button] = pygame.time.get_ticks()
         else:
             self.release(button)
 
     def release(self, button):
-        self.pressed_now = [
-            but for but in self.pressed_now if but is not button]
+        self.pressed_now.pop(button)
 
     def purge_dpad(self):
-        self.pressed_now = [
-            but for but in self.pressed_now if type(but) is not tuple]
+        self.pressed_now = {
+            but: time_stamp for (but, time_stamp) in self.pressed_now.items()
+            if type(but) is not tuple}
 
-    def is_pressed(self, button) -> bool:
-        return button in self.pressed_now
+    def is_pressed(self, button) -> Optional[int]:
+        # return button in self.pressed_now.keys()
+        time_stamp = self.pressed_now.get(button)
+
+        if time_stamp is not None:
+            time_stamp = pygame.time.get_ticks() - time_stamp
+
+        return time_stamp
 
     def just_pressed(self, button) -> bool:
-        return self.is_pressed(button) and button not in self.last_pressed_now
+        return (self.is_pressed(button) is not None) and button not in self.last_pressed_now.keys()
 
     def just_released(self, button) -> bool:
-        return button in self.last_pressed_now and not self.is_pressed(button)
+        return button in self.last_pressed_now.keys() and not (self.is_pressed(button) is not None)
 
     def step(self):
         self.last_pressed_now = deepcopy(self.pressed_now)

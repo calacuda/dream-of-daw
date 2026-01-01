@@ -14,7 +14,7 @@ use std::{
 };
 use tinyaudio::OutputDevice;
 
-const N_STEPS: usize = 16;
+pub const N_STEPS: usize = 16;
 
 pub mod audio_wrapper;
 
