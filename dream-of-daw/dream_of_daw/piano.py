@@ -52,7 +52,7 @@ def draw_piano(playing, step_i, midi_notes, cursor_position):
         color = CRUST
         offset = OCTAVE_W * (i // 12)
         key = black_keys[black_i]
-        key.left = PIANO_BLACK_W * (i % 12) + offset + SIDE_BARS_W
+        key.left += PIANO_BLACK_W * (i % 12) + offset
 
         if (midi_note == midi_notes[step_i] and playing) or (midi_note == midi_notes[cursor_position] and not playing):
             color = SURFACE_2
