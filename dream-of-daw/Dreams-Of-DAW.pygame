@@ -125,14 +125,14 @@ def handle_pygame_events():
 def do_single_press(button, method):
     hold_time = controller.just_released(button)
 
-    if hold_time is not None and 10 < hold_time <= 225:
+    if hold_time is not None and 10 < hold_time <= 250:
         method()
 
 
 def do_hold_combo(hold_button, tap_button, method):
     hold_time = controller.is_pressed(hold_button)
 
-    if hold_time is not None and 275 < hold_time:
+    if hold_time is not None and 300 < hold_time:
         do_single_press(tap_button, method)
 
 
@@ -204,10 +204,14 @@ def edit_step():
         do_single_press(B, lambda: stepper.set_note(
             channel_i, cursor.index, None if stepper.get_step_state(
                 channel_i, cursor.index).note is not None else 60))
-        do_hold_combo(B, LB, mk_edit_f(-1))
-        do_hold_combo(B, RB, mk_edit_f(+1))
-        do_hold_combo(B, LT, mk_edit_f(-12))
-        do_hold_combo(B, RT, mk_edit_f(+12))
+        # do_hold_combo(B, LB, mk_edit_f(-1))
+        # do_hold_combo(B, RB, mk_edit_f(+1))
+        # do_hold_combo(B, LT, mk_edit_f(-12))
+        # do_hold_combo(B, RT, mk_edit_f(+12))
+        do_single_press(LB, mk_edit_f(-1))
+        do_single_press(RB, mk_edit_f(+1))
+        do_single_press(LT, mk_edit_f(-12))
+        do_single_press(RT, mk_edit_f(+12))
 
 
 def exit_steps():
