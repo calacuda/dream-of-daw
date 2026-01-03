@@ -14,4 +14,6 @@ it allows for:
 - [ ] design an sqlite schema for storing and recalling plugin information.
 - [ ] a way to set macros based on plugin (recall from sqlite)
 - [ ] top view (macros, pitch, & mod-wheel)
-- [ ] hint menu-bar.
+- [ ] hint menu-bar
+- [ ] add a fucntion like do_single_press but will trigger its action once on press, and then "re-trigger" its action periodically when the button is held
+- [ ] make steps poly-phonic or add more channels
