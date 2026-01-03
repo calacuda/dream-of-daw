@@ -16,4 +16,4 @@ it allows for:
 - [ ] top view (macros, pitch, & mod-wheel)
 - [ ] hint menu-bar
 - [ ] add a fucntion like do_single_press but will trigger its action once on press, and then "re-trigger" its action periodically when the button is held
-- [ ] make steps poly-phonic or add more channels
+- [ ] make steps poly-phonic or add more channels or make a polyphonic drum track
