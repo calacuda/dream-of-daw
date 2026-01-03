@@ -328,10 +328,10 @@ def play_arp():
         quit_event = pygame.event.Event(pygame.QUIT)
         pygame.event.post(quit_event)
 
-    # t = Thread(target=stop_notes, daemon=True)
-    # t.start()
+    t = Thread(target=stop_notes, daemon=True)
+    t.start()
 
-    # return t
+    return t
 
 
 if __name__ == "__main__":
@@ -341,9 +341,10 @@ if __name__ == "__main__":
     # t = play_arp()
     # play_arp()
     # cursor.sector = UiSector.Sections
-    for i in range(3):
+    for i in range(2):
         mixer.set_instrument(i, "Wt Synth")
 
+    mixer.set_instrument(2, "1.909")
     mixer.set_instrument(3, "1.909")
 
     log.info("starting main loop.")
