@@ -170,6 +170,7 @@ def handle_start():
         do_single_press(A, fs[cursor.index])
 
 
+
 def edit_bpm():
     def mk_edit_f(adjust_amt):
         def edit():
@@ -233,6 +234,63 @@ def exit_steps():
         do_hold_combo(A, RIGHT, set_sector_to(UiSector.BottomRight))
 
 
+def drum_note(note):
+    if note < 35:
+        return midi_note(note)
+
+    names = {
+        0: 'akd',
+        1: 'kd1', 
+        2: 'stk', 
+        3: 'AcSnr', 
+        4: 'Clp', 
+        5: 'ESnr', 
+        6: 'LFT', 
+        7: 'CHiH', 
+        8: 'HFT', 
+        9: 'PHiH ', 
+        10: 'LT', 
+        11: 'OHiH', 
+        12: 'LMT', 
+        13: 'HiMT', 
+        14: 'Crs1', 
+        15: 'HiT', 
+        16: 'Rd1', 
+        17: 'Chin', 
+        18: 'Bell', 
+        19: 'Tam', 
+        20: 'SCym', 
+        21: 'CB', 
+        22: 'CrCym', 
+        23: 'Vibs', 
+        24: 'RdCy2', 
+        25: 'HiB', 
+        26: 'LoB', 
+        27: 'MHiC', 
+        28: 'OHiC', 
+        29: 'LoC', 
+        30: 'HiTim', 
+        31: 'LoTim', 
+        32: 'HiAg', 
+        33: 'LoAg', 
+        34: 'Cab', 
+        35: 'Mar', 
+        36: 'ShWh', 
+        37: 'LonWh', 
+        38: 'ShGro', 
+        39: 'LoGro', 
+        40: 'Clave', 
+        41: 'HiWood', 
+        42: 'LoWood', 
+        43: 'MuCu', 
+        44: 'OpCu', 
+        45: 'MuTri', 
+        46: 'OpTri'
+    }
+
+    return names.get(note - 35, midi_note(note))
+
+
 def setup():
     pass
 
@@ -250,7 +308,12 @@ def loop():
     step_states = [stepper.get_step_state(
         channel_i, step_i) for step_i in range(16)]
     midi_notes = [step.note for step in step_states]
-    note_names = [midi_note(
+    dis_note = midi_note
+
+    if mixer.is_drums(channel_i):
+        dis_note = drum_note
+
+    note_names = [dis_note(
         step.note) if step.note is not None else None for step in step_states]
     plugins = mixer.get_plugin_names()
     section_i = stepper.get_section()
@@ -345,9 +408,10 @@ if __name__ == "__main__":
     # t = play_arp()
     # play_arp()
     # cursor.sector = UiSector.Sections
-    for i in range(2):
-        mixer.set_instrument(i, "Wt Synth")
-
+    # for i in range(2):
+    #     mixer.set_instrument(i, "Wt Synth")
+    mixer.set_instrument(0, "Wt Synth")
+    mixer.set_instrument(1, "1.909")
     mixer.set_instrument(2, "1.909")
     mixer.set_instrument(3, "1.909")
 

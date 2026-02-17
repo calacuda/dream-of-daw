@@ -1,13 +1,21 @@
 use crate::plugin_chain::PluginChain;
 use crate::{Sample, SinglePlugin, BUFFER_FRAMES, N_CHANNELS, N_EFFECTS, SAMPLE_RATE};
 use log::*;
+use midir::{Ignore, MidiInput};
 use pyo3::prelude::*;
 use rack::prelude::*;
 use rayon::{current_num_threads, prelude::*};
-use std::path::PathBuf;
-use std::sync::{Arc, RwLock};
+use std::thread::sleep;
+use std::time::Duration;
+use std::{
+    sync::{atomic::{AtomicUsize, Ordering}, {Arc, RwLock}},
+thread::{JoinHandle, spawn},
+path::PathBuf,
+collections::HashMap,
+};
 use tinyaudio::{run_output_device, OutputDevice, OutputDeviceParameters};
 use biquad::*;
+use midi_msg::*;
 
 struct Multizip<T>(Vec<T>);
 
@@ -40,6 +48,10 @@ pub struct Mixer {
     /// global effects on the output of all channels. these get applied after the channels are
     /// mixed together.
     pub effects: Arc<RwLock<Vec<SinglePlugin>>>,
+    /// sets where the usb midi input should be routed.
+    midi_target: Arc<AtomicUsize>,
+    /// midi input type
+    _jh: Arc<JoinHandle<()>>,
 }
 
 impl Mixer {
@@ -229,7 +241,18 @@ impl Mixer {
         })
         .expect("failed to start audio thread...");
 
-        (Self { channels, effects, /* _device */ }, device)
+        let midi_target = Arc::new(AtomicUsize::new(0));
+
+        let jh = spawn({
+            let channels = channels.clone();
+            let target = midi_target.clone();
+
+            || {
+                midi_thread(channels, target);
+            }
+        });
+
+        (Self { channels, effects, /* _device */ midi_target, _jh: Arc::new(jh) }, device)
     }
 }
 
@@ -376,6 +399,22 @@ impl Mixer {
             channel.volume = volume;
         }
     }
+
+    pub fn set_usb_midi_target(&mut self, channel_i: usize) {
+        self.midi_target.store(channel_i, Ordering::Relaxed);
+    }
+
+    pub fn is_drums(&self, channel_i: usize) -> bool {
+        if let Some(Ok(Some(categories))) = &self
+            .channels
+            .get(channel_i)
+            .map(|lock_writer| lock_writer.read().map(|channel| channel.sound_gen.as_ref().map(|p| p.get_categories())))
+        {
+            categories.contains(&"Drum".into())
+        } else {
+            false
+        }
+    }
 }
 
 pub fn load_plugin(plugin_name: &str) -> Option<SinglePlugin> {
@@ -401,6 +440,83 @@ pub fn load_plugin(plugin_name: &str) -> Option<SinglePlugin> {
     }
 
     plugin.ok()
+}
+
+fn midi_thread(channels: Arc<Vec<Arc<RwLock<PluginChain>>>>, target: Arc<AtomicUsize>) {
+    let midi_in = &mut MidiInput::new("Dream-of-DAW").expect("failed to build MIDI input");
+    midi_in.ignore(Ignore::None);
+    let mut midi_devs = HashMap::new();
+
+    let send_midi = move |midi: MidiEvent| {
+        let channel = &channels[target.load(Ordering::Relaxed)];
+
+        if let Ok(mut channel) = channel.write() {
+            if let Some(sound_gen) = &mut channel.sound_gen {
+                if let Err(e) = sound_gen.send_midi(&[midi]) {
+                    error!("sending midi failed with error {e}");
+                }
+            } else {
+                error!("no sound generator");
+            }
+        } else {
+            error!("failed to write channel {}", target.load(Ordering::Relaxed));
+        }
+    };
+    let into_u8 = |channel| {
+        match channel {
+            Channel::Ch1 => 0,
+            Channel::Ch2 => 1,
+            Channel::Ch3 => 2,
+            Channel::Ch4 => 3,
+            Channel::Ch5 => 4,
+            Channel::Ch6 => 5,
+            Channel::Ch7 => 6,
+            Channel::Ch8 => 7,
+            Channel::Ch9 => 8,
+            Channel::Ch10 => 9,
+            Channel::Ch11 => 10,
+            Channel::Ch12 => 11,
+            Channel::Ch13 => 12,
+            Channel::Ch14 => 13,
+            Channel::Ch15 => 14,
+            Channel::Ch16 => 15,
+        }
+    };
+
+    loop {
+        let in_ports = midi_in.ports();
+
+        for (i, in_port) in in_ports.iter().enumerate() {
+            if let Ok(in_port_name) = midi_in.port_name(&in_port) {
+                let send_midi = send_midi.clone();
+
+                let midi_in = MidiInput::new(format!("Dream-of-DAW-{i}").as_str()).expect("failed to build MIDI input");
+
+                if let Ok(conn_in) = midi_in.connect(
+                    &in_port,
+                    format!("{in_port_name}-input").as_str(),
+                    move |_, message, _| {
+                        // println!("{}: {:?} (len = {})", stamp, message, message.len());
+                        let msg = MidiMsg::from_midi(message);
+
+                        let msg = match msg {
+                            Ok((MidiMsg::ChannelVoice { channel, msg: ChannelVoiceMsg::NoteOn { note, velocity } }, _)) => MidiEvent::note_on(note, velocity, into_u8(channel), 0),
+                            Ok((MidiMsg::ChannelVoice { channel, msg: ChannelVoiceMsg::NoteOff { note, velocity } }, _)) => MidiEvent::note_off(note, velocity, into_u8(channel), 0),
+                            Ok((MidiMsg::ChannelVoice { channel, msg: ChannelVoiceMsg::ControlChange { control: ControlChange::CC { control, value } } }, _)) => MidiEvent::control_change(control, value, into_u8(channel), 0),
+                            _ => return,
+                        };
+
+                        send_midi(msg);
+                    },
+                    (),
+                ) {
+                    midi_devs.insert(in_port_name, conn_in);
+                }
+            }
+        }
+
+        sleep(Duration::from_secs_f32(0.5));
+    }
 }
 
 #[allow(dead_code)]
