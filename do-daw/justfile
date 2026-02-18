@@ -22,6 +22,7 @@ server-docs:
 
   if [[ -z $proc ]]; then
     echo "no docs server found; RUNNING"
+    # nohup python3 -m http.server -b 127.0.0.1 -d ./target/doc 8080 > /dev/null &
     nohup python3 -m http.server -d ./target/doc 8080 > /dev/null &
     echo "docs-server process: $(ps aux | rg "python3 -m http.server" | rg -v "rg python3" | cut -d " " -f 4)"
   elif [[ $dir == $PWD && -n $dir ]]; then
