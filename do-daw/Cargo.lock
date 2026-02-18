@@ -793,7 +793,7 @@ dependencies = [
 [[package]]
 name = "rack"
 version = "0.4.8"
-source = "git+https://github.com/calacuda/rack#1754266cf6063ad9481a5eeef9821394117c83bc"
+source = "git+https://github.com/calacuda/rack#5a8d39f4f7e1fc25a3efb2d6a699c86137124804"
 dependencies = [
  "cmake",
  "smallvec",
