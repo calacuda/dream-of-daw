@@ -37,7 +37,7 @@ where
     }
 }
 
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Clone)]
 pub struct Mixer {
     // _thread_jh: JoinHandle<()>,

@@ -314,7 +314,7 @@ def loop():
         dis_note = drum_note
 
     note_names = [dis_note(
-        step.note) if step.note is not None else None for step in step_states]
+        step.note) if step.note is not None and not step.mute else None for step in step_states]
     plugins = mixer.get_plugin_names()
     section_i = stepper.get_section()
 

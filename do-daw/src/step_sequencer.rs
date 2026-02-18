@@ -18,10 +18,14 @@ pub const N_STEPS: usize = 16;
 
 pub mod audio_wrapper;
 
-#[pyclass(get_all)]
+#[pyclass(from_py_object, get_all)]
 #[derive(Clone, Copy, Debug, PartialEq, PartialOrd)]
 pub struct StepState {
+    /// the note this step should play if mute is off
     note: Option<u8>,
+    /// whether the note will be displayed and played or not
+    mute: bool,
+    /// note velocity
     velocity: u8,
     /// per-channel
     channel: u8,
@@ -39,6 +43,7 @@ impl Default for StepState {
     fn default() -> Self {
         Self {
             note: None,
+            mute: false,
             velocity: 64,
             channel: 0,
             mod_whl: 0.0,
@@ -51,7 +56,7 @@ impl Default for StepState {
     }
 }
 
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Clone, Default, Debug, PartialEq, PartialOrd)]
 pub struct StepSequence {
     pub steps: [StepState; N_STEPS],
@@ -132,7 +137,15 @@ impl StepSequencer {
                 channel.write().map(|mut channel| {
                     channel.steps.get_mut(step_i).map(|step| {
                         debug!("setting section {section_i}, channel {channel_i}, step {step_i}, to note {note:?}"); 
-                        step.note = note;
+
+                        if note.is_some() && !step.mute {
+                            step.note = note;
+                        } else if note.is_none() && step.note.is_some() && !step.mute  {
+                            step.mute = true;
+                        } else if step.note.is_some() && step.mute {
+                            step.mute = false;
+                        }
+
                         step.note
                     })
                 })
@@ -153,7 +166,7 @@ impl StepSequencer {
                 channel.write().map(|mut channel| {
                     channel.steps.get_mut(step_i).map(|step| {
                         debug!("editing section {section_i}, channel {channel_i}, step {step_i}, by value {note:?}"); 
-                        step.note.as_mut().map(|num| if note.abs() as u8 <= *num && !(note < 0 && *num == 24) {
+                        step.note.as_mut().map(|num| if note.abs() as u8 <= *num && !(note < 0 && *num == 24) && !step.mute {
                             *num = ((*num as i8) + note).abs() as u8 % 108;
 
                             if *num < 24 {

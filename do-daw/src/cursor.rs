@@ -1,7 +1,7 @@
 use crate::{N_CHANNELS, N_SECTIONS, step_sequencer::N_STEPS};
 use pyo3::prelude::*;
 
-#[pyclass(eq, eq_int)]
+#[pyclass(eq, eq_int, from_py_object)]
 #[derive(Default, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
 pub enum UiSector {
     #[default]
@@ -18,7 +18,7 @@ pub enum UiSector {
     // Playback,
 }
 
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Default, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
 pub struct Cursor {
     #[pyo3(get, set)]
