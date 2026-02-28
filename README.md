@@ -2,7 +2,7 @@
 
 A DAW written in Rust and Python3 for retro-emulaiton handhelds running linux.
 
-it allows for:
+It allows:
 - running/loading VST3 plugings
 - game controller controls
 - 4 instrument plugins (on for each channel)
