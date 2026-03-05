@@ -1,6 +1,6 @@
 # Dream Of DAW:
 
-A DAW written in Rust and Python3 for retro-emulaiton handhelds running linux.
+A DAW written in Rust and Python3 for retro-emulation handhelds running linux.
 
 It allows:
 - running/loading VST3 plugings
